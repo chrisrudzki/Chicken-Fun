@@ -11,7 +11,7 @@ func _ready() -> void:
 	#pass
 	#
 
-
+#CHANGE HERE!!!!!!!!!!!!!!!!!
 
 func _on_body_entered(body: Node2D) -> void:
 	#print("enterd")
