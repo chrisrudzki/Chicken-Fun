@@ -1,0 +1,39 @@
+[gd_scene load_steps=5 format=3 uid="uid://clyb0kqoqen1e"]
+
+[ext_resource type="Script" path="res://boid.gd" id="1_1ujo2"]
+[ext_resource type="Texture2D" uid="uid://dxofp5gn7a0j" path="res://art/Untitled.png" id="2_d76ko"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_abt1v"]
+radius = 31.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_40gsk"]
+radius = 6.0
+
+[node name="Boid" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("1_1ujo2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(7, -1)
+scale = Vector2(0.0303589, 0.0307219)
+texture = ExtResource("2_d76ko")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_abt1v")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_40gsk")
+
+[node name="Timer2" type="Timer" parent="."]
+
+[node name="Timer" type="Timer" parent="."]
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="timeout" from="Timer2" to="." method="_on_timer_2_timeout"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
