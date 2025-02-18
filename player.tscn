@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://dts3k644pba50"]
+[gd_scene load_steps=5 format=3 uid="uid://dts3k644pba50"]
 
 [ext_resource type="Script" path="res://character.gd" id="1_ho100"]
 [ext_resource type="Texture2D" uid="uid://ducyl0g300pa2" path="res://images.png" id="2_k3v5r"]
@@ -6,7 +6,12 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rscxo"]
 size = Vector2(8, 8)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_m0jna"]
+size = Vector2(36, 31)
+
 [node name="Player" type="CharacterBody2D"]
+motion_mode = 1
+safe_margin = 1.468
 script = ExtResource("1_ho100")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -17,6 +22,27 @@ texture = ExtResource("2_k3v5r")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_rscxo")
 
-[node name="Timer" type="Timer" parent="."]
+[node name="Hitbox" type="Area2D" parent="."]
+collision_mask = 3
 
-[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(5, -0.5)
+shape = SubResource("RectangleShape2D_m0jna")
+
+[node name="rollTimer" type="Timer" parent="."]
+
+[node name="rollCooldownTimer" type="Timer" parent="."]
+
+[node name="shootTimer" type="Timer" parent="."]
+
+[node name="regenHeathTimer" type="Timer" parent="."]
+
+[node name="regenHeathTimer2" type="Timer" parent="."]
+
+[connection signal="body_entered" from="Hitbox" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Hitbox" to="." method="_on_area_2d_body_exited"]
+[connection signal="timeout" from="rollTimer" to="." method="_on_roll_timer_timeout"]
+[connection signal="timeout" from="rollCooldownTimer" to="." method="_on_roll_cooldown_timer_timeout"]
+[connection signal="timeout" from="shootTimer" to="." method="_on_shoot_timer_timeout"]
+[connection signal="timeout" from="regenHeathTimer" to="." method="_on_regen_heath_timer_timeout"]
+[connection signal="timeout" from="regenHeathTimer2" to="." method="_on_regen_heath_timer_2_timeout"]
