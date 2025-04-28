@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 
-var movement_speed = 40
+var movement_speed = 23
 
 var neighbours = []
 
@@ -58,7 +58,6 @@ func all_raycasts():
 func all_neighbours():
 	return neighbours
 	
-	
 func does_boid_avoid():
 	return boid_avoid
 
@@ -66,9 +65,7 @@ func chicken_hit(dmg_amount):
 	print("chicken hit")
 	health = health - dmg_amount
 	
-	if health < 0:
-		queue_free()
-
+	
 
 func boid():
 	pass
@@ -133,26 +130,26 @@ func _physics_process(_delta: float):
 	
 	#generate path to new position if in corner adjacent square
 	var v = position
-
+	
 	var int_pos = Vector2i(v.x, v.y)
 		
 	if area == 1 and player.area == 3 and use_tracking == false:
-		#print("1->3")
+		print("1->3")
 		use_tracking = true
 		path_arr = parent.get_path_arr(position, Vector2(182,157))
 		
 	elif area == 4 and player.area == 2 and use_tracking == false:
-		#print("4->2")
+		print("4->2")
 		use_tracking = true
 		path_arr = parent.get_path_arr(position, Vector2(89,67))
 
 	elif area == 3 and player.area == 1 and use_tracking == false:
-		#print("3->1")
+		print("3->1")
 		use_tracking = true
 		path_arr = parent.get_path_arr(position, Vector2(78,279))
 		
 	elif area == 2 and player.area == 4 and use_tracking == false:
-		#print("2->4")
+		print("2->4")
 		use_tracking = true
 		path_arr = parent.get_path_arr(position, Vector2(195,245))
 		
@@ -266,8 +263,11 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 	
 	if body.has_method("rock"):
 		
-		
 		chicken_hit(120)
+		
+	if body.has_method("bullet"):
+		
+		chicken_hit(10)
 
 	if body.has_method("player"):
 		
@@ -282,7 +282,6 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 		else:
 			is_attacking = true
 			#player = body
-			
 			
 	if (body.has_method("boid") and body.boid_num != boid_num):
 		
@@ -318,8 +317,6 @@ func _on_area_2d_2_body_exited(body: Node2D) -> void:
 	
 func _on_knock_down_timer_timeout() -> void:
 	pass # Replace with function body.
-
-
 
 
 func _on_knockdown_timer_timeout() -> void:

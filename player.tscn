@@ -7,7 +7,7 @@
 size = Vector2(8, 8)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m0jna"]
-size = Vector2(36, 31)
+size = Vector2(13, 10)
 
 [node name="Player" type="CharacterBody2D"]
 motion_mode = 1
@@ -26,14 +26,16 @@ shape = SubResource("RectangleShape2D_rscxo")
 collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2(5, -0.5)
+position = Vector2(0.5, 0)
 shape = SubResource("RectangleShape2D_m0jna")
 
 [node name="rollTimer" type="Timer" parent="."]
 
 [node name="rollCooldownTimer" type="Timer" parent="."]
 
-[node name="shootTimer" type="Timer" parent="."]
+[node name="shootCooldownSG" type="Timer" parent="."]
+
+[node name="shootCooldownBG" type="Timer" parent="."]
 
 [node name="regenHeathTimer" type="Timer" parent="."]
 
@@ -43,6 +45,7 @@ shape = SubResource("RectangleShape2D_m0jna")
 [connection signal="body_exited" from="Hitbox" to="." method="_on_area_2d_body_exited"]
 [connection signal="timeout" from="rollTimer" to="." method="_on_roll_timer_timeout"]
 [connection signal="timeout" from="rollCooldownTimer" to="." method="_on_roll_cooldown_timer_timeout"]
-[connection signal="timeout" from="shootTimer" to="." method="_on_shoot_timer_timeout"]
+[connection signal="timeout" from="shootCooldownSG" to="." method="_on_shoot_SG_timer_timeout"]
+[connection signal="timeout" from="shootCooldownBG" to="." method="_on_shoot_BG_cooldown_timeout"]
 [connection signal="timeout" from="regenHeathTimer" to="." method="_on_regen_heath_timer_timeout"]
 [connection signal="timeout" from="regenHeathTimer2" to="." method="_on_regen_heath_timer_2_timeout"]

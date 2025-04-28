@@ -10,7 +10,10 @@ signal updateLevel
 
 @onready var roll_timer = $rollTimer
 @onready var roll_cooldown_timer = $rollCooldownTimer
-@onready var shoot_cooldown_timer = $shootTimer
+
+@onready var shoot_cooldown_SG_timer = $shootCooldownSG
+@onready var shoot_cooldown_BG_timer = $shootCooldownBG
+
 @onready var regen_health_timer = $regenHeathTimer
 @onready var regen_health_timer2 = $regenHeathTimer2
 
@@ -18,20 +21,35 @@ var prev_input_direction = starting_direction
 @onready var main = get_tree().get_root().get_node("Main Scene")
 var rock = preload("res://rock.tscn")
 
+var bullet = preload("res://bullet.tscn")
 
 var health = 100
 var maxHealth = 100
 var area
 
-var can_shoot = true
-var shoot_cooldown = true
-var shoot_cooldown_amount = 2
-var shoot_count = 0
+var can_shoot_small_gun = true
+var can_shoot_big_gun = true
+
+var shoot_cooldown_small_gun = true
+var shoot_cool_amount_small_gun = .2
+
+var shoot_cooldown_big_gun = true
+var shoot_cool_amount_big_gun = .6
+
+
+#var shoot_count = 0
 
 var player_in_roll = false
 var roll_cooldown = true
 var roll_len = .1865
 var roll_cooldown_amount = 2.8
+
+
+var cur_gun = 1
+# guns
+# 1 = small gun 
+# 2 = big gun
+
 
 var enemys_in_range = []
 var is_regen_health = false
@@ -53,47 +71,90 @@ func damage_self(x):
 	
 	
 	
-func shoot():
-	var scalar = 20.5
+func shoot_big_gun():
+	var scalar = 20
 	
-	var dis_between = ((get_global_mouse_position().x - position.x) ** 2 + (get_global_mouse_position().y - position.y) ** 2) ** .5
-	var scaled_x = (scalar * ( get_global_mouse_position().x - position.x)) / dis_between
-	var scaled_y = (scalar * ( get_global_mouse_position().y - position.y)) / dis_between
+	print("HERE!!")
 	
-	var scaled_dir = position + Vector2(scaled_x, scaled_y)
+	var mouse_pos_global = get_global_mouse_position()
+	var loc_mouse_pos = main.to_local(mouse_pos_global)
+	
+	var dir = position.direction_to(loc_mouse_pos)
+	
+	
+	var spawn_point = position + (dir * scalar)
 	
 	var instance = rock.instantiate()
-	instance.dir = rotation
-	instance.spawn_pos = scaled_dir 
+	
+	instance.spawn_pos = spawn_point
 	instance.spawn_rot = rotation
-	instance.x = position.direction_to(get_global_mouse_position())
+	instance.x = dir
 	main.add_child.call_deferred(instance)
+	
+func shoot_small_gun():
+	var scalar = 20
+	
+	print("HERE!!")
+	
+	var mouse_pos_global = get_global_mouse_position()
+	var loc_mouse_pos = main.to_local(mouse_pos_global)
+	
+	var dir = position.direction_to(loc_mouse_pos)
+	
+	
+	var spawn_point = position + (dir * scalar)
+	
+	var instance = bullet.instantiate()
+	
+	instance.spawn_pos = spawn_point
+	instance.spawn_rot = rotation
+	instance.x = dir
+	main.add_child.call_deferred(instance)
+	
 	
 
 func _physics_process(_delta):
 	
-	print("pos  ", position)
+	#print("pos  ", position)
 	
 	if is_regen_health and health <= 100:
 		health = health + 1
 		updateHealth.emit()
-		
+	
 	
 	var shoot_input = Input.get_action_strength("shoot")
 	
+	var small_gun_change_wep = Input.get_action_strength("small_gun_change_wep")
+	var big_gun_change_wep = Input.get_action_strength("big_gun_change_wep")
 	
-	if shoot_count > 2:
-		shoot_count = 0
-	
-	shoot_count = shoot_count + 1
-	
-	
-	if shoot_input == 1 and can_shoot:
+	if small_gun_change_wep == 1:
+		cur_gun = 1
 		
-		shoot_cooldown_timer.start(5)
-		can_shoot = false
+	elif big_gun_change_wep == 1:
+		cur_gun = 2
 		
-		shoot()
+	
+	#if shoot_count > 2:
+		#shoot_count = 0
+	
+	#shoot_count = shoot_count + 1
+	#print(cur_gun)
+	#!!!!
+	if shoot_input == 1 and can_shoot_small_gun and cur_gun == 1:
+		
+		shoot_cooldown_SG_timer.start(.09)
+		can_shoot_small_gun = false
+		
+		shoot_small_gun()
+	
+	
+	if shoot_input == 1 and can_shoot_big_gun and cur_gun == 2:
+		
+		shoot_cooldown_BG_timer.start(1.2)
+		can_shoot_big_gun = false
+		
+		shoot_big_gun()
+		
 	
 	
 	if health < 0:
@@ -118,10 +179,9 @@ func _physics_process(_delta):
 	
 	var player_roll = Input.get_action_strength("space")
 	
-	var player_attack = Input.get_action_strength("attack")
+	#var player_attack = Input.get_action_strength("attack")
 	
 	if player_roll and roll_cooldown:
-		
 		
 		for i in len(enemys_in_range):
 			
@@ -147,14 +207,14 @@ func _physics_process(_delta):
 	
 	
 	
-	if player_attack == 1 and shoot_cooldown:
-		
-		for i in len(enemys_in_range):
-			enemys_in_range[i].damage_self(30)
-		
-		shoot_cooldown_timer.start(shoot_cooldown_amount)
-		shoot_cooldown = false
-		
+	#if player_attack == 1 and shoot_cooldown:
+		#
+		#for i in len(enemys_in_range):
+			#enemys_in_range[i].damage_self(30)
+		#
+		#shoot_cooldown_timer.start(shoot_cooldown_amount)
+		#shoot_cooldown = false
+	#
 
 	velocity = input_direction * move_speed * _delta
 	
@@ -175,9 +235,6 @@ func _on_area_2d_body_exited(body: Node2D) -> void:
 		enemys_in_range.erase(body)
 		
 
-
-
-
 func _on_regen_heath_timer_timeout() -> void:
 	is_regen_health = true
 	regen_health_timer2.start(.7)
@@ -192,9 +249,14 @@ func _on_roll_timer_timeout() -> void:
 	player_in_roll = false
 
 
-func _on_shoot_timer_timeout() -> void:
-	can_shoot = true
-
 
 func _on_roll_cooldown_timer_timeout() -> void:
 	roll_cooldown = true
+
+
+func _on_shoot_SG_timer_timeout() -> void:
+	can_shoot_small_gun = true
+
+
+func _on_shoot_BG_cooldown_timeout() -> void:
+	can_shoot_big_gun = true
