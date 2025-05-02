@@ -19,14 +19,14 @@ func _ready():
 	position = spawn_pos
 	rotation = spawn_rot
 	
-	timer.start(3)
+	timer.start(8)
 	
 func _physics_process(delta):
 
 	if x != null:
 		velocity = x * speed
 	#velocity = Vector2(0,-speed).rotated(dir)
-		
+	
 	move_and_slide()
 	
 

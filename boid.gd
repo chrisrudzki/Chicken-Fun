@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 
-var movement_speed = 23
+var move_speed = 12
 
 var neighbours = []
 
@@ -16,10 +16,18 @@ var vel_slow = 2
 @onready var raycast3 = $RayCast2D3
 @onready var raycast4 = $RayCast2D4
 
+@export var money_label : Label
+
 @onready var timer = $Timer
 @onready var timer2 = $Timer2
-@onready var knock_down_timer = $KnockdownTimer
 
+@onready var knock_down_timer = $KnockdownTimer
+@onready var bullet_timer = $BulletTimer
+
+#@export var money_tag: Label
+
+
+var money: int
 
 var melee_dmg = 25
 
@@ -32,13 +40,14 @@ var dir_to
 
 var new_path_timer = 0
 var area = 99
-var parent
+var main_scene
 var use_tracking = false
 var path_arr
 var tracking_pos = 4
 var pl_avoid = Vector2.ZERO
 var health = 100
 var roll_knockback
+var bullet_delete
 
 
 #offset centre, adj movement, nearby velocity
@@ -48,6 +57,7 @@ var nv = Vector2.ZERO
 
 var knockback = Vector2.ZERO
 var knockback_multi = 0
+
 
 
 
@@ -81,7 +91,7 @@ func in_area(new_area):
 	
 	
 func _ready():
-	parent = get_parent()
+	main_scene = get_parent()
 	
 	
 #func damage_self_knockback(damage_amount, knockback_multi):
@@ -98,7 +108,7 @@ func damage_self(damage_amount):
 	
 	
 func boid_player_coll():
-	var player = parent.get_node("Player")
+	var player = main_scene.get_node("Player")
 	#pl_avoid = player.position - position 
 	
 	if abs(position.x - player.position.x) < 1 or abs(position.y - player.position.y) < 1:
@@ -116,10 +126,12 @@ func _physics_process(_delta: float):
 	
 	if health < 0:
 		$CollisionShape2D.disabled = true
-		parent.boid_num = parent.boid_num -1
+		main_scene.boid_num = main_scene.boid_num -1
+		
+		main_scene.money = main_scene.money + 5
 		queue_free()
 	
-	var player = parent.get_node("Player")
+	var player = main_scene.get_node("Player")
 	
 	if is_attacking and melee_cooldown == false: #if player is in boid 
 		player.damage_self(melee_dmg)
@@ -136,22 +148,22 @@ func _physics_process(_delta: float):
 	if area == 1 and player.area == 3 and use_tracking == false:
 		print("1->3")
 		use_tracking = true
-		path_arr = parent.get_path_arr(position, Vector2(182,157))
+		path_arr = main_scene.get_path_arr(position, Vector2(182,157))
 		
 	elif area == 4 and player.area == 2 and use_tracking == false:
 		print("4->2")
 		use_tracking = true
-		path_arr = parent.get_path_arr(position, Vector2(89,67))
+		path_arr = main_scene.get_path_arr(position, Vector2(89,67))
 
 	elif area == 3 and player.area == 1 and use_tracking == false:
 		print("3->1")
 		use_tracking = true
-		path_arr = parent.get_path_arr(position, Vector2(78,279))
+		path_arr = main_scene.get_path_arr(position, Vector2(78,279))
 		
 	elif area == 2 and player.area == 4 and use_tracking == false:
 		print("2->4")
 		use_tracking = true
-		path_arr = parent.get_path_arr(position, Vector2(195,245))
+		path_arr = main_scene.get_path_arr(position, Vector2(195,245))
 		
 		
 	if use_tracking == true and tracking_pos < path_arr.size():
@@ -232,8 +244,9 @@ func _physics_process(_delta: float):
 	
 	
 	dir_to = dir_to.normalized()
-
-	velocity = (pl_avoid * knockback_multi + dir_to*1.3 + oc/2 + am + nv) * movement_speed
+	print("boid move speed:", move_speed)
+	
+	velocity = (pl_avoid * knockback_multi + dir_to*1.3 + oc/2 + am + nv) * move_speed
 	
 	
 	if abs(position.x - player.position.x) < 10 and abs(position.y - player.position.y) < 10:
@@ -267,7 +280,14 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 		
 	if body.has_method("bullet"):
 		
-		chicken_hit(10)
+		chicken_hit(35)
+		body.delete_timer.start(.02)
+		
+		#body.queue_free()
+		
+	if body.has_method("wall"):
+		
+		chicken_hit(120)
 
 	if body.has_method("player"):
 		

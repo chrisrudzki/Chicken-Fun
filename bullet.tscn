@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bf0x4cde8hwxw" path="res://blue-square-texture-background.jpeg" id="2_2b3cf"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_rufx4"]
-radius = 2.0
+radius = 6.0
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
 collision_layer = 3
@@ -12,8 +12,8 @@ collision_mask = 2
 script = ExtResource("1_jdb2q")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(2.38419e-07, 1.19209e-07)
-scale = Vector2(0.00674797, 0.0111929)
+position = Vector2(2.98023e-08, -1.19209e-07)
+scale = Vector2(0.0162602, 0.0253807)
 texture = ExtResource("2_2b3cf")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -21,4 +21,7 @@ shape = SubResource("CircleShape2D_rufx4")
 
 [node name="Timer" type="Timer" parent="."]
 
+[node name="DeleteTimer" type="Timer" parent="."]
+
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="timeout" from="DeleteTimer" to="." method="_on_delete_timer_timeout"]

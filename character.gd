@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-@export var move_speed : int = 10000
+@export var move_speed : int = 1850
 
 var starting_direction = Vector2(0,1)
 var input_direction = starting_direction
@@ -13,6 +13,8 @@ signal updateLevel
 
 @onready var shoot_cooldown_SG_timer = $shootCooldownSG
 @onready var shoot_cooldown_BG_timer = $shootCooldownBG
+@onready var shoot_cooldown_WG_timer = $shootCooldownWG
+
 
 @onready var regen_health_timer = $regenHeathTimer
 @onready var regen_health_timer2 = $regenHeathTimer2
@@ -22,6 +24,9 @@ var prev_input_direction = starting_direction
 var rock = preload("res://rock.tscn")
 
 var bullet = preload("res://bullet.tscn")
+var wall = preload("res://wall.tscn")
+
+var wall_amount = 0
 
 var health = 100
 var maxHealth = 100
@@ -29,12 +34,16 @@ var area
 
 var can_shoot_small_gun = true
 var can_shoot_big_gun = true
+var can_shoot_wall_gun = true
 
 var shoot_cooldown_small_gun = true
 var shoot_cool_amount_small_gun = .2
 
 var shoot_cooldown_big_gun = true
 var shoot_cool_amount_big_gun = .6
+
+var shoot_cooldown_wall_gun = true
+#var shoot_cool_amount_small_gun = .2
 
 
 #var shoot_count = 0
@@ -49,6 +58,7 @@ var cur_gun = 1
 # guns
 # 1 = small gun 
 # 2 = big gun
+# 3 = wall
 
 
 var enemys_in_range = []
@@ -81,7 +91,6 @@ func shoot_big_gun():
 	
 	var dir = position.direction_to(loc_mouse_pos)
 	
-	
 	var spawn_point = position + (dir * scalar)
 	
 	var instance = rock.instantiate()
@@ -112,10 +121,41 @@ func shoot_small_gun():
 	main.add_child.call_deferred(instance)
 	
 	
+func shoot_wall_gun():
+	var scalar = 20
+	
+	print("HERE!!")
+	
+	var mouse_pos_global = get_global_mouse_position()
+	var loc_mouse_pos = main.to_local(mouse_pos_global)
+	
+	var dir = position.direction_to(loc_mouse_pos)
+	
+	var ang = dir.angle()
+	
+	print("ang ", ang)
+	#var ang_rad = deg_to_rad(ang)
+	
+	
+	var spawn_point = position + (dir * scalar)
+	
+	var instance = wall.instantiate()
+	
+	wall_amount = wall_amount + 1
+	
+	instance.wall_num = wall_amount
+	instance.loc_mouse_pos = loc_mouse_pos
+	instance.spawn_pos = spawn_point
+	instance.spawn_rot = ang
+	instance.x = dir
+	main.add_child.call_deferred(instance)
+	
 
 func _physics_process(_delta):
 	
 	#print("pos  ", position)
+	
+	#print("pos ", position)
 	
 	if is_regen_health and health <= 100:
 		health = health + 1
@@ -126,6 +166,7 @@ func _physics_process(_delta):
 	
 	var small_gun_change_wep = Input.get_action_strength("small_gun_change_wep")
 	var big_gun_change_wep = Input.get_action_strength("big_gun_change_wep")
+	var wall_gun_change_wep = Input.get_action_strength("wall_gun_change_wep")
 	
 	if small_gun_change_wep == 1:
 		cur_gun = 1
@@ -133,6 +174,8 @@ func _physics_process(_delta):
 	elif big_gun_change_wep == 1:
 		cur_gun = 2
 		
+	elif wall_gun_change_wep == 1:
+		cur_gun = 3
 	
 	#if shoot_count > 2:
 		#shoot_count = 0
@@ -142,18 +185,28 @@ func _physics_process(_delta):
 	#!!!!
 	if shoot_input == 1 and can_shoot_small_gun and cur_gun == 1:
 		
-		shoot_cooldown_SG_timer.start(.09)
+		shoot_cooldown_SG_timer.start(.70)
 		can_shoot_small_gun = false
 		
 		shoot_small_gun()
-	
-	
+		await get_tree().create_timer(0.08).timeout
+		shoot_small_gun()
+		await get_tree().create_timer(0.08).timeout
+		shoot_small_gun()
+		
 	if shoot_input == 1 and can_shoot_big_gun and cur_gun == 2:
 		
 		shoot_cooldown_BG_timer.start(1.2)
 		can_shoot_big_gun = false
 		
 		shoot_big_gun()
+		
+	if shoot_input == 1 and can_shoot_wall_gun and cur_gun == 3:
+		
+		shoot_cooldown_WG_timer.start(.5)
+		can_shoot_wall_gun = false
+		
+		shoot_wall_gun()
 		
 	
 	
@@ -214,7 +267,7 @@ func _physics_process(_delta):
 		#
 		#shoot_cooldown_timer.start(shoot_cooldown_amount)
 		#shoot_cooldown = false
-	#
+	
 
 	velocity = input_direction * move_speed * _delta
 	
@@ -260,3 +313,7 @@ func _on_shoot_SG_timer_timeout() -> void:
 
 func _on_shoot_BG_cooldown_timeout() -> void:
 	can_shoot_big_gun = true
+
+
+func _on_shoot_WG_cooldown_timeout() -> void:
+	can_shoot_wall_gun = true
