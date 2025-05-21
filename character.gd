@@ -32,6 +32,12 @@ var health = 100
 var maxHealth = 100
 var area
 
+var small_gun_lvl = 0
+var big_gun_lvl = 0
+var wall_gun_lvl = 0
+
+var bullet_speed = 380
+
 var can_shoot_small_gun = true
 var can_shoot_big_gun = true
 var can_shoot_wall_gun = true
@@ -44,7 +50,7 @@ var shoot_cool_amount_big_gun = .6
 
 var shoot_cooldown_wall_gun = true
 #var shoot_cool_amount_small_gun = .2
-
+var shoot_small_gun_amount = 2
 
 #var shoot_count = 0
 
@@ -64,6 +70,8 @@ var cur_gun = 1
 var enemys_in_range = []
 var is_regen_health = false
 
+var can_shop = false
+
 func player():
 	pass
 	
@@ -79,6 +87,24 @@ func damage_self(x):
 	health = health - x
 	updateHealth.emit()
 	
+	
+	
+func small_gun_upgrade():
+	small_gun_lvl = small_gun_lvl + 1
+	
+	if small_gun_lvl == 1:
+		bullet_speed = 500
+		shoot_small_gun_amount = 3
+		
+	elif small_gun_lvl == 2:
+		bullet_speed = 680
+	
+func big_gun_upgrade():
+	big_gun_lvl = big_gun_lvl + 1
+	
+	
+func wall_gun_upgrade():
+	wall_gun_lvl = wall_gun_lvl + 1
 	
 	
 func shoot_big_gun():
@@ -115,6 +141,7 @@ func shoot_small_gun():
 	
 	var instance = bullet.instantiate()
 	
+	instance.speed = bullet_speed
 	instance.spawn_pos = spawn_point
 	instance.spawn_rot = rotation
 	instance.x = dir
@@ -155,7 +182,8 @@ func _physics_process(_delta):
 	
 	#print("pos  ", position)
 	
-	#print("pos ", position)
+	print("pos1 ", position)
+	
 	
 	if is_regen_health and health <= 100:
 		health = health + 1
@@ -189,14 +217,15 @@ func _physics_process(_delta):
 		can_shoot_small_gun = false
 		
 		shoot_small_gun()
-		await get_tree().create_timer(0.08).timeout
-		shoot_small_gun()
-		await get_tree().create_timer(0.08).timeout
-		shoot_small_gun()
+		
+		for i in range(shoot_small_gun_amount-1):
+			await get_tree().create_timer(0.08).timeout
+			shoot_small_gun()
+		
 		
 	if shoot_input == 1 and can_shoot_big_gun and cur_gun == 2:
 		
-		shoot_cooldown_BG_timer.start(1.2)
+		shoot_cooldown_BG_timer.start(3.0)
 		can_shoot_big_gun = false
 		
 		shoot_big_gun()
@@ -208,7 +237,6 @@ func _physics_process(_delta):
 		
 		shoot_wall_gun()
 		
-	
 	
 	if health < 0:
 		#death animation 
@@ -259,33 +287,26 @@ func _physics_process(_delta):
 	input_direction = input_direction.normalized()
 	
 	
-	
-	#if player_attack == 1 and shoot_cooldown:
-		#
-		#for i in len(enemys_in_range):
-			#enemys_in_range[i].damage_self(30)
-		#
-		#shoot_cooldown_timer.start(shoot_cooldown_amount)
-		#shoot_cooldown = false
-	
 
 	velocity = input_direction * move_speed * _delta
-	
-	
+
 	move_and_slide()
 	
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body.has_method("boid"):
-		
-		damage_self(10)
-		enemys_in_range.append(body)
+		if body.can_attack == true:
+			damage_self(10)
+			body.attack()
+			enemys_in_range.append(body)
+			body.in_player_range = true
+		#body.in_player_range = true
 		
 	
 func _on_area_2d_body_exited(body: Node2D) -> void:
 	if body.has_method("boid"):
-		
 		enemys_in_range.erase(body)
+		body.in_player_range = false
 		
 
 func _on_regen_heath_timer_timeout() -> void:
@@ -300,8 +321,6 @@ func _on_regen_heath_timer_2_timeout() -> void:
 func _on_roll_timer_timeout() -> void:
 	move_speed = 10000
 	player_in_roll = false
-
-
 
 func _on_roll_cooldown_timer_timeout() -> void:
 	roll_cooldown = true

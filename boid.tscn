@@ -1,13 +1,58 @@
-[gd_scene load_steps=5 format=3 uid="uid://clyb0kqoqen1e"]
+[gd_scene load_steps=12 format=3 uid="uid://clyb0kqoqen1e"]
 
 [ext_resource type="Script" path="res://boid.gd" id="1_1ujo2"]
 [ext_resource type="Texture2D" uid="uid://dxofp5gn7a0j" path="res://art/Untitled.png" id="2_d76ko"]
+[ext_resource type="Texture2D" uid="uid://b4pykbydwid83" path="res://Ducks2.png" id="3_7bcj5"]
+[ext_resource type="Texture2D" uid="uid://dxb3sx3wg4jtf" path="res://death1.png" id="3_7ehyq"]
+[ext_resource type="Texture2D" uid="uid://8xixopum02pp" path="res://duck_attack_no_feet_2.png" id="3_ld02a"]
+[ext_resource type="Texture2D" uid="uid://dyx73lah7o27l" path="res://duck_attack_no_feet.png" id="4_3pimx"]
+[ext_resource type="Texture2D" uid="uid://cofor55tbxt1b" path="res://Ducks3.png" id="4_fjvdi"]
+[ext_resource type="Texture2D" uid="uid://c6af7wlhgvbo" path="res://death2.png" id="4_rftuu"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_abt1v"]
-radius = 23.0
+radius = 14.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_40gsk"]
 radius = 8.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_f7bf8"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_ld02a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_3pimx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_ld02a")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.8,
+"texture": ExtResource("3_7ehyq")
+}, {
+"duration": 2.0,
+"texture": ExtResource("4_rftuu")
+}],
+"loop": false,
+"name": &"death",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_7bcj5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_fjvdi")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
 
 [node name="Boid" type="CharacterBody2D"]
 collision_layer = 2
@@ -16,6 +61,7 @@ motion_mode = 1
 script = ExtResource("1_1ujo2")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
 position = Vector2(7, -1)
 scale = Vector2(0.0303589, 0.0307219)
 texture = ExtResource("2_d76ko")
@@ -36,8 +82,18 @@ shape = SubResource("CircleShape2D_40gsk")
 
 [node name="KnockdownTimer" type="Timer" parent="."]
 
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(2, 0)
+scale = Vector2(0.0711325, 0.0711325)
+sprite_frames = SubResource("SpriteFrames_f7bf8")
+animation = &"attack"
+
+[node name="AttackCooldownTimer" type="Timer" parent="."]
+
 [connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
 [connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
 [connection signal="timeout" from="Timer2" to="." method="_on_timer_2_timeout"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="KnockdownTimer" to="." method="_on_knockdown_timer_timeout"]
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="timeout" from="AttackCooldownTimer" to="." method="_on_attack_cooldown_timer_timeout"]

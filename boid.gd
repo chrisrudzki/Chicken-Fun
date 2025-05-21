@@ -11,6 +11,8 @@ var player_in_boid
 var boid_avoid
 var vel_slow = 2
 
+var in_player_range = false
+
 @onready var raycast1 = $RayCast2D
 @onready var raycast2 = $RayCast2D2
 @onready var raycast3 = $RayCast2D3
@@ -20,9 +22,12 @@ var vel_slow = 2
 
 @onready var timer = $Timer
 @onready var timer2 = $Timer2
+@onready var attack_cooldown_timer =$AttackCooldownTimer
 
 @onready var knock_down_timer = $KnockdownTimer
 @onready var bullet_timer = $BulletTimer
+
+
 
 #@export var money_tag: Label
 
@@ -48,6 +53,9 @@ var pl_avoid = Vector2.ZERO
 var health = 100
 var roll_knockback
 var bullet_delete
+
+
+var can_attack = true
 
 
 #offset centre, adj movement, nearby velocity
@@ -91,6 +99,7 @@ func in_area(new_area):
 	
 	
 func _ready():
+	$AnimatedSprite2D.play("walk")
 	main_scene = get_parent()
 	
 	
@@ -105,6 +114,12 @@ func damage_self(damage_amount):
 	
 	health = health - damage_amount
 	print("health ", health)
+	
+	
+func attack():
+	can_attack = false
+	attack_cooldown_timer.start(1.5)
+	$AnimatedSprite2D.play("attack")
 	
 	
 func boid_player_coll():
@@ -122,15 +137,20 @@ func boid_player_coll():
 	#damage_self_knockback
 	
 func _physics_process(_delta: float):
+	if in_player_range and can_attack:
+		attack()
 	
 	
 	if health < 0:
+		$AnimatedSprite2D.play("death")
 		$CollisionShape2D.disabled = true
 		main_scene.boid_num = main_scene.boid_num -1
-		
 		main_scene.money = main_scene.money + 5
-		queue_free()
-	
+		print("hero")
+		$Area2D/CollisionShape2D.disabled = true
+		#$DeathTimer.start(1)
+		#queue_free()
+		
 	var player = main_scene.get_node("Player")
 	
 	if is_attacking and melee_cooldown == false: #if player is in boid 
@@ -138,7 +158,6 @@ func _physics_process(_delta: float):
 		melee_cooldown = true
 		timer2.wait_time = 2
 		timer2.start()
-	
 	
 	#generate path to new position if in corner adjacent square
 	var v = position
@@ -342,6 +361,20 @@ func _on_knock_down_timer_timeout() -> void:
 func _on_knockdown_timer_timeout() -> void:
 	boid_stop = true
 	await get_tree().create_timer(1.0).timeout 
-	boid_stop = false
-		
+	boid_stop = false	
+	
+
+
+
+
+func _on_animated_sprite_2d_animation_finished() -> void:
+	
+	if $AnimatedSprite2D.animation == "death":
+		queue_free()
+	else:
+		$AnimatedSprite2D.play("walk")
+
+
+func _on_attack_cooldown_timer_timeout() -> void:
+	can_attack = true
 	

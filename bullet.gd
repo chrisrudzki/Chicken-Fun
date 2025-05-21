@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 
-@export var speed = 700
+@export var speed = 380
 @onready var delete_timer = $Timer
 
 

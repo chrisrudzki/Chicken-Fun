@@ -21,10 +21,14 @@ var spawn_is_ready = true
 var amount_spawning = 0
 var freq_spawning = .5
 
-var spawn_pos = [Vector2(-450, -117), Vector2(-155, -300), Vector2(450, -250), Vector2(714, -51), Vector2(860, 150), Vector2(540, 670), Vector2(190, 740), Vector2(-270, 610)]
 
+var all_spawn_pos = [Vector2(-320, -135), Vector2(-320, 260), Vector2(550, -260), Vector2(-320, 600), Vector2(680, 575), Vector2(680, 300)]
+#var spawn_pos 
+var spawn_pos = [Vector2(-250, -95), Vector2(680, 575)]
+#250, 200 and 580, 200
 @onready var round_timer = $RoundTimer
 @onready var spawn_timer = $SpawnTimer
+@onready var spawn_pos_timer = $SpawnPosTimer
 
 @onready var money_label = $CanvasLayer/Control/HBoxContainer/MarginContainer3/Money_Label
 @onready var round_label = $CanvasLayer/Control2/HBoxContainer/MarginContainer/Label
@@ -40,10 +44,7 @@ func _ready():
 	astar_grid.region = Rect2i(-153, -11, 565, 421)
 	astar_grid.cell_size = Vector2(16, 16)
 	astar_grid.update()
-	
-	#print("here")
-	#print(astar_grid.get_id_path(Vector2i(0, 0), Vector2i(3, 4))) # prints (0, 0), (1, 1), (2, 2), (3, 3), (3, 4)
-	#print(astar_grid.get_point_path(Vector2i(0, 0), Vector2i(3, 4))) # prints (0, 0), (16, 16), (32, 32), (48, 48), (48, 64)
+	spawn_pos_timer.start(30)
 	
 func get_path_arr(boid_postion, player_position):
 	
@@ -54,7 +55,8 @@ func _physics_process(delta: float) -> void:
 	
 	money_label.text = str(money)
 	
-	print("boid num ", boid_num)
+	#print("boid num ", boid_num)
+	print("all spawn pos ", spawn_pos[0], spawn_pos[1])
 	
 	if player.health <= 0:
 		Global.current_round = round
@@ -73,8 +75,8 @@ func _physics_process(delta: float) -> void:
 		
 			var boid_position = spawn_pos[randi() % spawn_pos.size()]
 			
-			boid_position.x = boid_position.x + randi_range(-130, 130)
-			boid_position.y = boid_position.y + randi_range(-130, 130)
+			boid_position.x = boid_position.x + randi_range(-100, 100)
+			boid_position.y = boid_position.y + randi_range(-100, 100)
 			
 			ins.position = boid_position
 			
@@ -144,8 +146,6 @@ func change_round():
 		print("NEXT ROUND")
 		
 	
-		
-	
 	
 func inst(pos):
 	var ins = new_boid.instantiate()
@@ -164,8 +164,22 @@ func _on_spawn_timer_timeout() -> void:
 
 
 
-func _on_area_2d_5_body_entered(body: Node2D) -> void:
+func _on_shop_area_body_entered(body: Node2D) -> void:
 	
+	if body.has_method("player"):
+		body.can_shop = true
+		
+
+func _on_shop_area_body_exited(body: Node2D) -> void:
+	
+	if body.has_method("player"):
+		body.can_shop = false
+
+
+
+
+
+func _on_island_area_body_entered(body: Node2D) -> void:
 	if body.has_method("boid"):
 		body.move_speed = body.move_speed + 21
 	
@@ -173,15 +187,24 @@ func _on_area_2d_5_body_entered(body: Node2D) -> void:
 		
 		body.move_speed = body.move_speed + 15000
 		
-	
-	#edit the player or boids speed here !!!!
 
-
-func _on_area_2d_5_body_exited(body: Node2D) -> void:
-	
+func _on_island_area_body_exited(body: Node2D) -> void:
 	if body.has_method("boid"):
 		body.move_speed = body.move_speed - 21
 	
 	elif body.has_method("player"):
 		body.move_speed = body.move_speed - 15000
 		
+
+
+func _on_spawn_pos_timer_timeout() -> void:
+	var index_1 = randi() % all_spawn_pos.size()
+	
+	var index_2 = index_1
+	while index_2 == index_1:
+		index_2 = randi() % all_spawn_pos.size()
+	
+	spawn_pos[0] = all_spawn_pos[index_1]
+	spawn_pos[1] = all_spawn_pos[index_2]
+	
+	spawn_pos_timer.start(10)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://bgxauntcprs00"]
+[gd_scene load_steps=41 format=3 uid="uid://bgxauntcprs00"]
 
 [ext_resource type="Script" path="res://main_scene.gd" id="1_2h5e5"]
 [ext_resource type="PackedScene" uid="uid://dts3k644pba50" path="res://player.tscn" id="1_hej5s"]
@@ -7,12 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://khno8wg6inf4" path="res://art/healthbarUnder.png" id="6_nfuei"]
 [ext_resource type="Texture2D" uid="uid://dwusfa46ikbpp" path="res://art/healthbarProgress.png" id="7_7kwcg"]
 [ext_resource type="Script" path="res://texture_progress_bar.gd" id="7_lh2eh"]
-[ext_resource type="PackedScene" uid="uid://bjqg5o0wbbrrs" path="res://area.tscn" id="8_jmv1e"]
 [ext_resource type="Texture2D" uid="uid://ducyl0g300pa2" path="res://images.png" id="8_ndntd"]
-[ext_resource type="Script" path="res://area.gd" id="9_2ogxg"]
-[ext_resource type="Script" path="res://area2.gd" id="9_sxcaw"]
-[ext_resource type="Script" path="res://area3.gd" id="10_byaeg"]
-[ext_resource type="Script" path="res://area4.gd" id="10_tiifi"]
+[ext_resource type="PackedScene" uid="uid://t78sluorm8wo" path="res://shop_menu.tscn" id="10_6hi0j"]
 [ext_resource type="Script" path="res://island.gd" id="13_35svt"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_uji5u"]
@@ -351,6 +347,9 @@ sources/1 = SubResource("TileSetAtlasSource_ea17s")
 [sub_resource type="CircleShape2D" id="CircleShape2D_2syug"]
 radius = 11.27
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_m843n"]
+radius = 27.0
+
 [node name="Main Scene" type="Node2D"]
 position = Vector2(-22, 17)
 script = ExtResource("1_2h5e5")
@@ -456,47 +455,41 @@ layout_mode = 2
 text = "0000
 "
 
-[node name="Area2D" parent="." instance=ExtResource("8_jmv1e")]
-visible = false
-position = Vector2(-322, -322)
-scale = Vector2(15, -14.5329)
-script = ExtResource("9_2ogxg")
-
-[node name="Area2D4" parent="." instance=ExtResource("8_jmv1e")]
-visible = false
-position = Vector2(-262, -297)
-scale = Vector2(15, -14.5329)
-script = ExtResource("10_tiifi")
-
-[node name="Area2D2" parent="." instance=ExtResource("8_jmv1e")]
-visible = false
-position = Vector2(-250, -337)
-scale = Vector2(14.5785, 13.4246)
-script = ExtResource("9_sxcaw")
-
-[node name="Area2D3" parent="." instance=ExtResource("8_jmv1e")]
-visible = false
-position = Vector2(-292, -309)
-scale = Vector2(15, 10)
-script = ExtResource("10_byaeg")
-
 [node name="RoundTimer" type="Timer" parent="."]
 
 [node name="SpawnTimer" type="Timer" parent="."]
 
-[node name="Area2D5" type="Area2D" parent="."]
+[node name="islandArea" type="Area2D" parent="."]
 position = Vector2(-322, -322)
 scale = Vector2(15, -14.5329)
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D5"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="islandArea"]
 position = Vector2(31.5333, -35.8497)
 shape = SubResource("CircleShape2D_2syug")
 script = ExtResource("13_35svt")
 
+[node name="ShopArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ShopArea"]
+position = Vector2(150, 198)
+shape = SubResource("CircleShape2D_m843n")
+
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
+
+[node name="shop_menu" parent="CanvasLayer2" node_paths=PackedStringArray("player") instance=ExtResource("10_6hi0j")]
+offset_left = 0.0
+offset_right = 0.0
+player = NodePath("../../Player")
+
+[node name="SpawnPosTimer" type="Timer" parent="."]
+
 [connection signal="updateHealth" from="Player" to="CanvasLayer/Control/HBoxContainer/MarginContainer/TextureProgressBar" method="_on_player_update_health"]
 [connection signal="timeout" from="RoundTimer" to="." method="_on_round_timer_timeout"]
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]
-[connection signal="body_entered" from="Area2D5" to="." method="_on_area_2d_5_body_entered"]
-[connection signal="body_exited" from="Area2D5" to="." method="_on_area_2d_5_body_exited"]
+[connection signal="body_entered" from="islandArea" to="." method="_on_island_area_body_entered"]
+[connection signal="body_exited" from="islandArea" to="." method="_on_island_area_body_exited"]
+[connection signal="body_entered" from="ShopArea" to="." method="_on_shop_area_body_entered"]
+[connection signal="body_exited" from="ShopArea" to="." method="_on_shop_area_body_exited"]
+[connection signal="timeout" from="SpawnPosTimer" to="." method="_on_spawn_pos_timer_timeout"]
