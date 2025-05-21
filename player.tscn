@@ -49,7 +49,7 @@ shape = SubResource("RectangleShape2D_m0jna")
 [connection signal="timeout" from="rollCooldownTimer" to="." method="_on_roll_cooldown_timer_timeout"]
 [connection signal="timeout" from="shootCooldownSG" to="." method="_on_shoot_SG_timer_timeout"]
 [connection signal="timeout" from="shootCooldownBG" to="." method="_on_shoot_BG_cooldown_timeout"]
-[connection signal="timeout" from="shootCooldownWG" to="." method="_on_shoot_WG_cooldown_timeout"]
 [connection signal="timeout" from="shootCooldownWG" to="." method="_on_shoot_cooldown_wg_timeout"]
+[connection signal="timeout" from="shootCooldownWG" to="." method="_on_shoot_WG_cooldown_timeout"]
 [connection signal="timeout" from="regenHeathTimer" to="." method="_on_regen_heath_timer_timeout"]
 [connection signal="timeout" from="regenHeathTimer2" to="." method="_on_regen_heath_timer_2_timeout"]

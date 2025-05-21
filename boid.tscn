@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://clyb0kqoqen1e"]
+[gd_scene load_steps=13 format=3 uid="uid://clyb0kqoqen1e"]
 
 [ext_resource type="Script" path="res://boid.gd" id="1_1ujo2"]
 [ext_resource type="Texture2D" uid="uid://dxofp5gn7a0j" path="res://art/Untitled.png" id="2_d76ko"]
@@ -10,10 +10,10 @@
 [ext_resource type="Texture2D" uid="uid://c6af7wlhgvbo" path="res://death2.png" id="4_rftuu"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_abt1v"]
-radius = 14.0
+radius = 22.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_40gsk"]
-radius = 8.0
+radius = 9.05539
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_f7bf8"]
 animations = [{
@@ -54,6 +54,8 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_gk0pk"]
+
 [node name="Boid" type="CharacterBody2D"]
 collision_layer = 2
 collision_mask = 2
@@ -90,6 +92,11 @@ animation = &"attack"
 
 [node name="AttackCooldownTimer" type="Timer" parent="."]
 
+[node name="AttackCollision" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackCollision"]
+shape = SubResource("CircleShape2D_gk0pk")
+
 [connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
 [connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
 [connection signal="timeout" from="Timer2" to="." method="_on_timer_2_timeout"]
@@ -97,3 +104,5 @@ animation = &"attack"
 [connection signal="timeout" from="KnockdownTimer" to="." method="_on_knockdown_timer_timeout"]
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="AttackCooldownTimer" to="." method="_on_attack_cooldown_timer_timeout"]
+[connection signal="body_entered" from="AttackCollision" to="." method="_on_attack_collision_body_entered"]
+[connection signal="body_exited" from="AttackCollision" to="." method="_on_attack_collision_body_exited"]

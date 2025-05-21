@@ -181,8 +181,8 @@ func _on_shop_area_body_exited(body: Node2D) -> void:
 
 func _on_island_area_body_entered(body: Node2D) -> void:
 	if body.has_method("boid"):
-		body.move_speed = body.move_speed + 21
-	
+		body.on_island = true
+		
 	elif body.has_method("player"):
 		
 		body.move_speed = body.move_speed + 15000
@@ -190,7 +190,7 @@ func _on_island_area_body_entered(body: Node2D) -> void:
 
 func _on_island_area_body_exited(body: Node2D) -> void:
 	if body.has_method("boid"):
-		body.move_speed = body.move_speed - 21
+		body.on_island = false
 	
 	elif body.has_method("player"):
 		body.move_speed = body.move_speed - 15000

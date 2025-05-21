@@ -28,7 +28,7 @@ var wall = preload("res://wall.tscn")
 
 var wall_amount = 0
 
-var health = 100
+var health = 10000
 var maxHealth = 100
 var area
 
@@ -246,8 +246,7 @@ func _physics_process(_delta):
 	if velocity != Vector2.ZERO:
 		rotation = lerp_angle(rotation, velocity.angle(), .4)
 	
-	
-	
+
 	if !player_in_roll:
 		input_direction = Vector2(
 			Input.get_action_strength("right") - Input.get_action_strength("left"),
@@ -269,7 +268,6 @@ func _physics_process(_delta):
 			enemys_in_range[i].damage_self(30)
 			
 			
-			
 		player_in_roll = true
 		move_speed = 27000
 		
@@ -277,7 +275,6 @@ func _physics_process(_delta):
 		roll_timer.start(roll_len)
 		roll_cooldown_timer.start(roll_cooldown_amount)
 		roll_cooldown = false
-		
 		
 		
 	if player_in_roll == true:
