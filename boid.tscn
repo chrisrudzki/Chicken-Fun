@@ -1,7 +1,6 @@
-[gd_scene load_steps=13 format=3 uid="uid://clyb0kqoqen1e"]
+[gd_scene load_steps=12 format=3 uid="uid://clyb0kqoqen1e"]
 
 [ext_resource type="Script" path="res://boid.gd" id="1_1ujo2"]
-[ext_resource type="Texture2D" uid="uid://dxofp5gn7a0j" path="res://art/Untitled.png" id="2_d76ko"]
 [ext_resource type="Texture2D" uid="uid://b4pykbydwid83" path="res://Ducks2.png" id="3_7bcj5"]
 [ext_resource type="Texture2D" uid="uid://dxb3sx3wg4jtf" path="res://death1.png" id="3_7ehyq"]
 [ext_resource type="Texture2D" uid="uid://8xixopum02pp" path="res://duck_attack_no_feet_2.png" id="3_ld02a"]
@@ -61,12 +60,6 @@ collision_layer = 2
 collision_mask = 2
 motion_mode = 1
 script = ExtResource("1_1ujo2")
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-visible = false
-position = Vector2(7, -1)
-scale = Vector2(0.0303589, 0.0307219)
-texture = ExtResource("2_d76ko")
 
 [node name="Area2D" type="Area2D" parent="."]
 collision_layer = 3
