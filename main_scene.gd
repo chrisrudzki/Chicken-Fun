@@ -1,8 +1,9 @@
 extends Node2D
 
-var new_boid = preload("res://boid.tscn")
+#var new_boid = preload("res://boid.tscn")
 var game_over_screen = preload("res://game_over_screen.tscn")
 var rock = preload("res://rock.tscn")
+var new_duck = preload("res://Duck.tscn")
 
 @onready var player = $Player
 var boid_num = 0
@@ -69,7 +70,7 @@ func _physics_process(delta: float) -> void:
 		spawn_timer.start(freq_spawning)
 		spawn_is_ready = false
 		for i in range(amount_spawning):
-			var ins = new_boid.instantiate()
+			var ins = new_duck.instantiate()
 			boid_num = boid_num + 1
 			ins.boid_num = boid_num
 		
@@ -147,14 +148,6 @@ func change_round():
 		
 	
 	
-func inst(pos):
-	var ins = new_boid.instantiate()
-	
-	ins.boid_num = boid_num + 1
-	boid_num = boid_num + 1
-	ins.position = pos
-	ins.money_label = $CanvasLayer/Control/HBoxContainer/MarginContainer3/Money_Label
-	add_child(ins)
 	
 func _on_round_timer_timeout() -> void:
 	round_is_done = true

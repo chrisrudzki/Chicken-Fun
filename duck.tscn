@@ -1,24 +1,95 @@
-[gd_scene load_steps=4 format=3 uid="uid://dyutu2y0mff6b"]
+[gd_scene load_steps=12 format=3 uid="uid://dv8v1iejlmeba"]
 
 [ext_resource type="Script" path="res://duck.gd" id="1_58sk5"]
+[ext_resource type="Texture2D" uid="uid://8xixopum02pp" path="res://duck_attack_no_feet_2.png" id="2_56gp2"]
+[ext_resource type="Texture2D" uid="uid://dyx73lah7o27l" path="res://duck_attack_no_feet.png" id="3_q7ypc"]
+[ext_resource type="Texture2D" uid="uid://dxb3sx3wg4jtf" path="res://death1.png" id="4_e4mt1"]
+[ext_resource type="Texture2D" uid="uid://c6af7wlhgvbo" path="res://death2.png" id="5_twulv"]
+[ext_resource type="Texture2D" uid="uid://b4pykbydwid83" path="res://Ducks2.png" id="6_ptelg"]
+[ext_resource type="Texture2D" uid="uid://cofor55tbxt1b" path="res://Ducks3.png" id="7_dyjkq"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_vlywa"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_gvfay"]
+radius = 23.0217
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_jjm54"]
-radius = 5.0
+[sub_resource type="CircleShape2D" id="CircleShape2D_m28fc"]
 
-[node name="Duck" type="Node2D"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_eu8kk"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_56gp2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_q7ypc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_56gp2")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.7,
+"texture": ExtResource("4_e4mt1")
+}, {
+"duration": 2.0,
+"texture": ExtResource("5_twulv")
+}],
+"loop": false,
+"name": &"death",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_ptelg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_dyjkq")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5sg0n"]
+radius = 9.0
+
+[node name="Duck" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("1_58sk5")
 
 [node name="NeighbourArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NeighbourArea"]
-shape = SubResource("CircleShape2D_vlywa")
+shape = SubResource("CircleShape2D_gvfay")
 
 [node name="HitBox" type="Area2D" parent="."]
+collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
-shape = SubResource("CircleShape2D_jjm54")
+shape = SubResource("CircleShape2D_m28fc")
 
-[connection signal="body_entered" from="NeighbourArea" to="." method="_on_area_2d_body_entered"]
-[connection signal="body_exited" from="NeighbourArea" to="." method="_on_area_2d_body_exited"]
+[node name="AttackStartupTimer" type="Timer" parent="."]
+
+[node name="AttackCooldownTimer" type="Timer" parent="."]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(1.42109e-14, -4.03897e-28)
+scale = Vector2(0.0643004, 0.0643004)
+sprite_frames = SubResource("SpriteFrames_eu8kk")
+animation = &"attack"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_5sg0n")
+
+[connection signal="body_entered" from="NeighbourArea" to="." method="_on_neighbour_area_body_entered"]
+[connection signal="body_exited" from="NeighbourArea" to="." method="_on_neighbour_area_body_exited"]
+[connection signal="body_entered" from="HitBox" to="." method="_on_hit_box_body_entered"]
+[connection signal="body_exited" from="HitBox" to="." method="_on_hit_box_body_exited"]
+[connection signal="timeout" from="AttackStartupTimer" to="." method="_on_attack_startup_timer_timeout"]
+[connection signal="timeout" from="AttackCooldownTimer" to="." method="_on_attack_cooldown_timer_timeout"]
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]

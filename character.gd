@@ -28,7 +28,7 @@ var wall = preload("res://wall.tscn")
 
 var wall_amount = 0
 
-var health = 10000
+var health = 100
 var maxHealth = 100
 var area
 
@@ -182,7 +182,7 @@ func _physics_process(_delta):
 	
 	#print("pos  ", position)
 	
-	print("pos1 ", position)
+	print("health ", health)
 	
 	
 	if is_regen_health and health <= 100:
@@ -256,17 +256,17 @@ func _physics_process(_delta):
 	if input_direction != Vector2.ZERO:
 		prev_input_direction = input_direction
 		
-	
+	#melee_cooldown
 	var player_roll = Input.get_action_strength("space")
 	
 	#var player_attack = Input.get_action_strength("attack")
 	
 	if player_roll and roll_cooldown:
 		
-		for i in len(enemys_in_range):
-			
-			enemys_in_range[i].damage_self(30)
-			
+		#for i in len(enemys_in_range):
+			#
+			#enemys_in_range[i].damage_self(30)
+			#
 			
 		player_in_roll = true
 		move_speed = 27000
@@ -283,27 +283,26 @@ func _physics_process(_delta):
 	
 	input_direction = input_direction.normalized()
 	
-	
+	#damage_self
 
 	velocity = input_direction * move_speed * _delta
 
 	move_and_slide()
 	
-
 func _on_area_2d_body_entered(body: Node2D) -> void:
-	if body.has_method("boid"):
-		if body.can_attack == true:
-			damage_self(10)
-			body.attack()
-			enemys_in_range.append(body)
-			body.in_player_range = true
+	if body.has_method("boid") and body.has_method("duck"):
+		#if body.can_attack == true:
+			#damage_self(10)
+			#body.attack()
+			#enemys_in_range.append(body)
+			#body.in_player_range = true
 		#body.in_player_range = true
-		
+		enemys_in_range.append(body)
 	
 func _on_area_2d_body_exited(body: Node2D) -> void:
 	if body.has_method("boid"):
 		enemys_in_range.erase(body)
-		body.in_player_range = false
+		#body.in_player_range = false
 		
 
 func _on_regen_heath_timer_timeout() -> void:

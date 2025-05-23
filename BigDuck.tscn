@@ -1,3 +1,40 @@
-[gd_scene format=3 uid="uid://dxeivemmdttcp"]
+[gd_scene load_steps=6 format=3 uid="uid://dxeivemmdttcp"]
+
+[ext_resource type="Script" path="res://big_duck.gd" id="1_0xna6"]
+[ext_resource type="Texture2D" uid="uid://b4pykbydwid83" path="res://Ducks2.png" id="2_jsn1c"]
+[ext_resource type="Texture2D" uid="uid://cofor55tbxt1b" path="res://Ducks3.png" id="3_vkvr8"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_g5enc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_jsn1c")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_vkvr8")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_m5jui"]
+radius = 100.18
 
 [node name="BigDuck" type="Node2D"]
+position = Vector2(-1, 1)
+script = ExtResource("1_0xna6")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(2, 3)
+sprite_frames = SubResource("SpriteFrames_g5enc")
+animation = &"walk"
+frame_progress = 0.795762
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(1, 2)
+shape = SubResource("CircleShape2D_m5jui")
+
+[node name="HitBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]

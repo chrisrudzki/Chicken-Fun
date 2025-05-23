@@ -56,6 +56,7 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_gk0pk"]
 
 [node name="Boid" type="CharacterBody2D"]
+visible = false
 collision_layer = 2
 collision_mask = 2
 motion_mode = 1
@@ -81,7 +82,7 @@ shape = SubResource("CircleShape2D_40gsk")
 position = Vector2(2, 0)
 scale = Vector2(0.0711325, 0.0711325)
 sprite_frames = SubResource("SpriteFrames_f7bf8")
-animation = &"attack"
+animation = &"death"
 
 [node name="AttackCooldownTimer" type="Timer" parent="."]
 

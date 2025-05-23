@@ -58,25 +58,18 @@ var nv = Vector2.ZERO
 var knockback = Vector2.ZERO
 
 
-func all_raycasts():
-	var casts = [raycast1, raycast2, raycast3, raycast4]
-	return casts
-
 func all_neighbours():
 	return neighbours
 	
 
 func chicken_hit(dmg_amount):
-	print("chicken hit")
+	#print("chicken hit")
 	health = health - dmg_amount
-	
+	print("BOID DMG1")
 
 func boid():
 	pass
 
-func get_player():
-	if player != null:
-		return player
 
 	
 func _ready():
@@ -84,19 +77,13 @@ func _ready():
 	main_scene = get_parent()
 	
 
-func damage_self(damage_amount):
-	#if boid is damaged
-	
-	health = health - damage_amount
-	print("health ", health)
-	
 	
 func attack():
 	can_attack = false
 	attack_cooldown_timer.start(1.5)
 	$AnimatedSprite2D.play("attack")
 	
-	
+
 func _physics_process(_delta: float):
 	if in_player_range and can_attack:
 		attack()
@@ -216,7 +203,7 @@ func _on_animated_sprite_2d_animation_finished() -> void:
 func _on_attack_cooldown_timer_timeout() -> void:
 	can_attack = true
 	
-	
+
 func _on_attack_collision_body_entered(body: Node2D) -> void:
 	
 	if body.has_method("rock"):
