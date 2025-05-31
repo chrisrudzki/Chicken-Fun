@@ -4,6 +4,8 @@ extends Node2D
 var game_over_screen = preload("res://game_over_screen.tscn")
 var rock = preload("res://rock.tscn")
 var new_duck = preload("res://Duck.tscn")
+var big_duck = preload("res://BigDuck.tscn")
+
 
 @onready var player = $Player
 var boid_num = 0
@@ -46,6 +48,21 @@ func _ready():
 	astar_grid.cell_size = Vector2(16, 16)
 	astar_grid.update()
 	spawn_pos_timer.start(30)
+	
+	
+	var ins = big_duck.instantiate()
+	boid_num = boid_num + 1
+	ins.boid_num = boid_num
+		
+	var boid_position = spawn_pos[randi() % spawn_pos.size()]
+			
+	boid_position.x = boid_position.x + randi_range(-100, 100)
+	boid_position.y = boid_position.y + randi_range(-100, 100)
+			
+	ins.position = boid_position
+			
+	add_child(ins)
+	
 	
 func get_path_arr(boid_postion, player_position):
 	
@@ -178,7 +195,7 @@ func _on_island_area_body_entered(body: Node2D) -> void:
 		
 	elif body.has_method("player"):
 		
-		body.move_speed = body.move_speed + 15000
+		body.move_speed = body.move_speed + 11000
 		
 
 func _on_island_area_body_exited(body: Node2D) -> void:
@@ -186,7 +203,7 @@ func _on_island_area_body_exited(body: Node2D) -> void:
 		body.on_island = false
 	
 	elif body.has_method("player"):
-		body.move_speed = body.move_speed - 15000
+		body.move_speed = body.move_speed - 11000
 		
 
 

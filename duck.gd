@@ -40,7 +40,7 @@ func die():
 	$AnimatedSprite2D.play("death")
 	$CollisionShape2D.disabled = true
 	main_scene.boid_num = main_scene.boid_num -1
-	main_scene.money = main_scene.money + 5
+	
 	$HitBox/CollisionShape2D.disabled = true
 	
 func attack(player_in_range, attack_ready):
@@ -81,6 +81,7 @@ func _on_animated_sprite_2d_animation_finished() -> void:
 	
 	if $AnimatedSprite2D.animation == "death":
 		queue_free()
+		main_scene.money = main_scene.money + 5
 	else:
 		$AnimatedSprite2D.play("walk")
 
@@ -95,7 +96,7 @@ func _on_hit_box_body_entered(body: Node2D) -> void:
 		
 	if body.has_method("bullet"):
 		
-		hit_self(35)
+		hit_self(body.dmg)
 		body.delete_timer.start(.02)
 		
 		#body.queue_free()

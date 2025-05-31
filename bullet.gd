@@ -6,6 +6,7 @@ extends CharacterBody2D
 
 
 #var dir : float
+var dmg
 var spawn_pos : Vector2
 var spawn_rot : float
 var x

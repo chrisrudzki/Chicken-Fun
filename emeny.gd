@@ -9,6 +9,7 @@ var health
 var move_speed = 1
 var player_in_range = false
 var attack_ready = true
+var enemy_type
 #var velocity = Vector2.ZERO
 
 #offset centre, adj movement, nearby velocity
@@ -88,7 +89,11 @@ func calc_velo(neighbours, on_island, move_speed, position):
 		else:
 			move_speed = 1.5
 			
-
+	if enemy_type == "big_duck":
+		oc = Vector2.ZERO
+		nv = Vector2.ZERO
+		move_speed = .5 
+		
 	print("boid speed", move_speed)
 	velocity = (dir_to*20 + oc + nv) * move_speed
 	
