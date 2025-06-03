@@ -1,7 +1,6 @@
 extends Enemy
 
 var boid_num
-var on_island = false
 
 var attack_cooldown = true
 var melee_dmg = 90
@@ -10,11 +9,18 @@ var melee_dmg = 90
 @onready var attack_cooldown_timer = $AttackCooldownTimer
 @onready var attack_startup_timer = $AttackStartupTimer
 
-
+func walk():
+	$AnimatedSprite2D.play("walk")
+	
+func swim():
+	$AnimatedSprite2D.play("swim")
+	
 func boid():
 	pass
 
 func _ready():
+	on_island = false
+
 	enemy_type = "big_duck"
 	move_speed = .02
 	main_scene = get_parent()
@@ -39,10 +45,15 @@ func attack(player_in_range, attack_ready):
 		player.damage_self(melee_dmg)
 		#animate player hurt
 		
+func hit_self(dmg_amount):
+	health = health - dmg_amount
+	$AnimatedSprite2D.play("hit")
+	
+	
 	
 func die():
 	$AnimatedSprite2D.play("death")
-	$CollisionShape2D.disabled = true
+	#$CollisionShape2D.disabled = true
 	main_scene.boid_num = main_scene.boid_num -1
 	main_scene.money = main_scene.money + 100
 	$HitBox/CollisionShape2D.disabled = true
@@ -103,6 +114,8 @@ func _on_hit_box_body_entered(body: Node2D) -> void:
 	if body.has_method("player"):
 		
 		player_in_range = false
+		
+
 		
 
 func _on_hit_box_body_exited(body: Node2D) -> void:

@@ -24,17 +24,19 @@ var spawn_is_ready = true
 var amount_spawning = 0
 var freq_spawning = .5
 
+var can_quack_noise = true
 
-var all_spawn_pos = [Vector2(-320, -135), Vector2(-320, 260), Vector2(550, -260), Vector2(-320, 600), Vector2(680, 575), Vector2(680, 300)]
+
+var all_spawn_pos = [Vector2(-250, -170), Vector2(-350, 1820), Vector2(-250, 490), Vector2(370, 700), Vector2(950, 450), Vector2(1200, 182), Vector2(1200, 182), Vector2(100, -112), Vector2(390, -200)]
 #var spawn_pos 
-var spawn_pos = [Vector2(-250, -95), Vector2(680, 575)]
+var spawn_pos = [Vector2(-250, -170), Vector2(950, 450)]
 #250, 200 and 580, 200
 @onready var round_timer = $RoundTimer
 @onready var spawn_timer = $SpawnTimer
 @onready var spawn_pos_timer = $SpawnPosTimer
 
-@onready var money_label = $CanvasLayer/Control/HBoxContainer/MarginContainer3/Money_Label
-@onready var round_label = $CanvasLayer/Control2/HBoxContainer/MarginContainer/Label
+#@onready var money_label = $CanvasLayer/Control/HBoxContainer/MarginContainer3/Money_Label
+@onready var money_label = $CanvasLayer/Control2/HBoxContainer/MarginContainer/Label
 
 
 func _ready():
@@ -70,6 +72,16 @@ func get_path_arr(boid_postion, player_position):
 	
 	
 func _physics_process(delta: float) -> void:
+	
+	print("im quacking", boid_num, can_quack_noise)
+	
+	if boid_num > 1 and can_quack_noise:
+		print("im quacking")
+		$duckQuack.play()
+		can_quack_noise = false
+		$duckNoiseTimer.start(10)
+		
+	
 	
 	money_label.text = str(money)
 	
@@ -111,19 +123,13 @@ func _physics_process(delta: float) -> void:
 		round_timer.start(round_time)
 	#round_is_done = false
 		
+func duck_death_sound():
+	$duckDeath.play()
 		
 	
 func change_round():
 	
-	#round_label.text = str(round)
 	round = round + 1
-	round_label.text = str(round)
-	#print("round", round)
-	#money_label.text = str(round)
-	#round 1 hardcoded as
-	#round_time: 30
-	#amount_spawning: 1
-	#freq_spawning: 3
 	
 	if round == 1:
 		print("START OF ROUND 1")
@@ -185,24 +191,23 @@ func _on_shop_area_body_exited(body: Node2D) -> void:
 	if body.has_method("player"):
 		body.can_shop = false
 
-
-
-
-
 func _on_island_area_body_entered(body: Node2D) -> void:
 	if body.has_method("boid"):
 		body.on_island = true
+		body.walk()
 		
 	elif body.has_method("player"):
-		
+		body.on_island = true
 		body.move_speed = body.move_speed + 11000
 		
 
 func _on_island_area_body_exited(body: Node2D) -> void:
 	if body.has_method("boid"):
 		body.on_island = false
-	
+		body.swim()
+		
 	elif body.has_method("player"):
+		body.on_island = false
 		body.move_speed = body.move_speed - 11000
 		
 
@@ -217,4 +222,9 @@ func _on_spawn_pos_timer_timeout() -> void:
 	spawn_pos[0] = all_spawn_pos[index_1]
 	spawn_pos[1] = all_spawn_pos[index_2]
 	
+	
 	spawn_pos_timer.start(10)
+
+
+func _on_duck_noise_timer_timeout() -> void:
+	can_quack_noise = true

@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://cbw7i56sg34py"]
+
+[ext_resource type="Script" path="res://splash.gd" id="1_c7vsa"]
+[ext_resource type="Texture2D" uid="uid://cfgd3pfqljwu6" path="res://splash.png" id="1_fp11j"]
+
+[node name="splash" type="CharacterBody2D"]
+script = ExtResource("1_c7vsa")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = -1
+position = Vector2(-5, -1)
+scale = Vector2(0.0500169, 0.0500169)
+texture = ExtResource("1_fp11j")
+region_enabled = true
+region_rect = Rect2(833.539, 1373.4, 497.679, 659.097)
+
+[node name="Timer" type="Timer" parent="."]
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

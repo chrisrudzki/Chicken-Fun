@@ -12,6 +12,10 @@ signal updateLevel
 @onready var roll_timer = $rollTimer
 @onready var roll_cooldown_timer = $rollCooldownTimer
 
+
+@onready var splash_cooldown_timer = $SplashTimer
+
+
 @onready var shoot_cooldown_SG_timer = $shootCooldownSG
 @onready var shoot_cooldown_BG_timer = $shootCooldownBG
 @onready var shoot_cooldown_WG_timer = $shootCooldownWG
@@ -23,11 +27,14 @@ signal updateLevel
 @onready var state_machine = animation_tree.get("parameters/playback")
 
 var prev_input_direction = starting_direction
-@onready var main = get_tree().get_root().get_node("Main Scene")
+@onready var main_scene = get_tree().get_root().get_node("Main Scene")
 var rock = preload("res://rock.tscn")
 
 var bullet = preload("res://bullet.tscn")
 var wall = preload("res://wall.tscn")
+var splash = preload("res://splash.tscn")
+var feet_prints = preload("res://feet_prints.tscn")
+
 
 var wall_amount = 0
 
@@ -79,6 +86,9 @@ var can_shop = false
 
 var is_idle
 var is_walking
+
+var on_island = true
+var can_splash = true
 
 
 #parameters/idle/blend_position
@@ -146,7 +156,7 @@ func shoot_small_gun():
 	var scalar = 20
 	
 	var mouse_pos_global = get_global_mouse_position()
-	var loc_mouse_pos = main.to_local(mouse_pos_global)
+	var loc_mouse_pos = main_scene.to_local(mouse_pos_global)
 	
 	var dir = position.direction_to(loc_mouse_pos)
 	
@@ -159,14 +169,14 @@ func shoot_small_gun():
 	instance.spawn_pos = spawn_point
 	instance.spawn_rot = rotation
 	instance.x = dir
-	main.add_child.call_deferred(instance)
+	main_scene.add_child.call_deferred(instance)
 	
 func shoot_big_gun():
 	var scalar = 20
 	
 	
 	var mouse_pos_global = get_global_mouse_position()
-	var loc_mouse_pos = main.to_local(mouse_pos_global)
+	var loc_mouse_pos = main_scene.to_local(mouse_pos_global)
 	
 	var dir = position.direction_to(loc_mouse_pos)
 	
@@ -177,7 +187,7 @@ func shoot_big_gun():
 	instance.spawn_pos = spawn_point
 	instance.spawn_rot = rotation
 	instance.x = dir
-	main.add_child.call_deferred(instance)
+	main_scene.add_child.call_deferred(instance)
 	
 
 	
@@ -186,7 +196,7 @@ func shoot_wall_gun():
 	
 	
 	var mouse_pos_global = get_global_mouse_position()
-	var loc_mouse_pos = main.to_local(mouse_pos_global)
+	var loc_mouse_pos = main_scene.to_local(mouse_pos_global)
 	
 	var dir = position.direction_to(loc_mouse_pos)
 	
@@ -201,21 +211,18 @@ func shoot_wall_gun():
 	instance.spawn_pos = spawn_point
 	instance.spawn_rot = ang
 	instance.x = dir
-	main.add_child.call_deferred(instance)
+	main_scene.add_child.call_deferred(instance)
 	
 	
 func _ready():
 	update_animation_parameters(starting_direction)
-
-	$AnimatedSprite2D.play("walk")
-
-func _physics_process(_delta):
 	
-	#print("pos  ", position)
+	
+func _physics_process(_delta):
 	
 	print("ani tree", $AnimationTree.get("parameters/playback"))
 	
-	print("health ", health)
+	print("posi ", position)
 	
 	if is_regen_health and health <= 100:
 		health = health + 1
@@ -229,8 +236,6 @@ func _physics_process(_delta):
 	var wall_gun_change_wep = Input.get_action_strength("wall_gun_change_wep")
 	
 	#int(shoot_input)
-	
-	
 	
 	
 	if small_gun_change_wep == 1:
@@ -276,29 +281,12 @@ func _physics_process(_delta):
 		
 	else:
 		animation_tree["parameters/conditions/swing"] = false
-		#gun_not_cool = true
-		#
-	#if int(shoot_input) == 1:
-		#animation_tree["parameters/conditions/swing"] = true
-	#else:
-		#animation_tree["parameters/conditions/swing"] = false
-	#
+	
 	
 	if health < 0:
-		#death animation 
+		
 		pass
-		
-		
-	#if velocity != Vector2.ZERO:
-		#rotation = lerp_angle(rotation, velocity.angle(), .4)
-	#
-
-	#if !player_in_roll:
-		#input_direction = Vector2(
-			#Input.get_action_strength("right") - Input.get_action_strength("left"),
-			#Input.get_action_strength("down") - Input.get_action_strength("up")
-		#)
-		
+	
 	input_direction = Vector2(
 			Input.get_action_strength("right") - Input.get_action_strength("left"),
 			Input.get_action_strength("down") - Input.get_action_strength("up")
@@ -307,42 +295,34 @@ func _physics_process(_delta):
 	update_animation_parameters(input_direction)
 	
 	
-	#if velocity == Vector2.ZERO:
-		#$AnimatedSprite2D.play("idle")
-	#else:
-		#$AnimatedSprite2D.play("walk")
-	
 	if input_direction != Vector2.ZERO:
 		prev_input_direction = input_direction
 		
-	#melee_cooldown
-	#var player_roll = Input.get_action_strength("space")
 	
-	#var player_attack = Input.get_action_strength("attack")
 	
-	#if player_roll and roll_cooldown:
+	print("out: ", on_island, can_splash)
+	
+	if velocity != Vector2.ZERO:
+	
+		if !on_island and can_splash:
+			can_splash = false
+			splash_cooldown_timer.start(.4)
 		
-		#for i in len(enemys_in_range):
-			#
-			#enemys_in_range[i].damage_self(30)
-			#
-			
-		#player_in_roll = true
-		#move_speed = 27000
-		#
-		#
-		#roll_timer.start(roll_len)
-		#roll_cooldown_timer.start(roll_cooldown_amount)
-		#roll_cooldown = false
-		#
-		#
-	#if player_in_roll == true:
-		#input_direction = prev_input_direction
-	#
+			var instance = splash.instantiate()
+			instance.scale *= 2
+			instance.position = position
+			main_scene.add_child.call_deferred(instance)
+		
+		elif on_island and can_splash:
+			can_splash = false
+			splash_cooldown_timer.start(.09)
+		
+			var instance = feet_prints.instantiate()
+			instance.position = position
+			instance.rotation = velocity.angle()
+			main_scene.add_child.call_deferred(instance)
 	
-	#input_direction = input_direction.normalized()  !!!
 	
-	#damage_self
 	
 	input_direction = input_direction.normalized()
 
@@ -389,7 +369,6 @@ func _on_area_2d_body_exited(body: Node2D) -> void:
 		enemys_in_range.erase(body)
 		#body.in_player_range = false
 		
-
 func _on_regen_heath_timer_timeout() -> void:
 	is_regen_health = true
 	regen_health_timer2.start(.7)
@@ -406,7 +385,6 @@ func _on_regen_heath_timer_2_timeout() -> void:
 #func _on_roll_cooldown_timer_timeout() -> void:
 	#roll_cooldown = true
 
-
 func _on_shoot_SG_timer_timeout() -> void:
 	can_shoot_small_gun = true
 
@@ -417,3 +395,7 @@ func _on_shoot_BG_cooldown_timeout() -> void:
 
 func _on_shoot_WG_cooldown_timeout() -> void:
 	can_shoot_wall_gun = true
+
+
+func _on_splash_timer_timeout() -> void:
+	can_splash = true

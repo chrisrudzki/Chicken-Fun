@@ -61,6 +61,11 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 	
 	if body.has_method("wall") and body.wall_num != wall_num:
 		body.hitwall()
+		
+	if body.has_method("bullet"):
+		body.velocity = Vector2.ZERO
+		
+	
 
 
 func _on_hitbox_body_exited(body: Node2D) -> void:
@@ -68,6 +73,5 @@ func _on_hitbox_body_exited(body: Node2D) -> void:
 
 
 func _on_stop_timer_timeout() -> void:
-	print("got here")
-	#velocity = Vector2.ZERO
+	
 	is_stopped = true

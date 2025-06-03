@@ -10,6 +10,7 @@ var move_speed = 1
 var player_in_range = false
 var attack_ready = true
 var enemy_type
+var on_island = false
 #var velocity = Vector2.ZERO
 
 #offset centre, adj movement, nearby velocity

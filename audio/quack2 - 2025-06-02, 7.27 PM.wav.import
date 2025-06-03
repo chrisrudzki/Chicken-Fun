@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://defc602ns6xe2"
+path="res://.godot/imported/quack2 - 2025-06-02, 7.27 PM.wav-ec706523f9015159be8fc91509e53ff6.sample"
+
+[deps]
+
+source_file="res://audio/quack2 - 2025-06-02, 7.27 PM.wav"
+dest_files=["res://.godot/imported/quack2 - 2025-06-02, 7.27 PM.wav-ec706523f9015159be8fc91509e53ff6.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

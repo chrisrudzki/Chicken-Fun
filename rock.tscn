@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://bca1n4sye2etk"]
 
 [ext_resource type="Script" path="res://rock.gd" id="1_5ntn4"]
-[ext_resource type="Texture2D" uid="uid://bf0x4cde8hwxw" path="res://blue-square-texture-background.jpeg" id="2_wai53"]
+[ext_resource type="Texture2D" uid="uid://cf82cqqgnkxss" path="res://rock.png" id="2_f7auc"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_rufx4"]
 radius = 27.0185
@@ -12,9 +12,9 @@ collision_mask = 2
 script = ExtResource("1_5ntn4")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(0, -2.38419e-07)
-scale = Vector2(0.0842785, 0.124178)
-texture = ExtResource("2_wai53")
+position = Vector2(74, 99)
+scale = Vector2(0.101916, 0.100114)
+texture = ExtResource("2_f7auc")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_rufx4")
