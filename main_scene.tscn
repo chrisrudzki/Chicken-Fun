@@ -1,4 +1,4 @@
-[gd_scene load_steps=49 format=3 uid="uid://bgxauntcprs00"]
+[gd_scene load_steps=50 format=3 uid="uid://bgxauntcprs00"]
 
 [ext_resource type="Script" path="res://main_scene.gd" id="1_2h5e5"]
 [ext_resource type="PackedScene" uid="uid://dts3k644pba50" path="res://player.tscn" id="1_hej5s"]
@@ -15,6 +15,7 @@
 [ext_resource type="AudioStream" uid="uid://o5hyantb73v" path="res://audio/391468__stereostory__quack_fart_noise_44k.wav" id="15_rs8fp"]
 [ext_resource type="Texture2D" uid="uid://dn2soswa6v810" path="res://art/background ocean.png" id="16_6n24n"]
 [ext_resource type="AudioStream" uid="uid://bai752r8yhtpo" path="res://audio/Qucks1-[AudioTrimmer.com].wav" id="16_tt0h6"]
+[ext_resource type="AudioStream" uid="uid://c4ii4anklw84i" path="res://Evening Harmony.wav" id="17_kjjla"]
 [ext_resource type="PackedScene" uid="uid://d10wkteb7v02h" path="res://shop.tscn" id="17_xt0pk"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_uji5u"]
@@ -354,7 +355,7 @@ sources/1 = SubResource("TileSetAtlasSource_ea17s")
 radius = 36.3456
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2syug"]
-radius = 8.06784
+radius = 8.68876
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d17cr"]
 size = Vector2(16.6333, 4.05975)
@@ -529,6 +530,11 @@ pitch_scale = 1.3
 stream = ExtResource("16_tt0h6")
 volume_db = 1.0
 
+[node name="bigDuckTimer" type="Timer" parent="."]
+
+[node name="mainAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("17_kjjla")
+
 [connection signal="updateHealth" from="Player" to="CanvasLayer/Control/HBoxContainer/MarginContainer/TextureProgressBar" method="_on_player_update_health"]
 [connection signal="timeout" from="RoundTimer" to="." method="_on_round_timer_timeout"]
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]
@@ -538,3 +544,4 @@ volume_db = 1.0
 [connection signal="body_entered" from="islandArea" to="." method="_on_island_area_body_entered"]
 [connection signal="body_exited" from="islandArea" to="." method="_on_island_area_body_exited"]
 [connection signal="timeout" from="duckNoiseTimer" to="." method="_on_duck_noise_timer_timeout"]
+[connection signal="timeout" from="bigDuckTimer" to="." method="_on_big_duck_timer_timeout"]

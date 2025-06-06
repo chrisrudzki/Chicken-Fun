@@ -27,17 +27,10 @@ func all_neighbours():
 
 
 func _ready():
-	#main_scene = get_parent()
-	#await get_tree().process_frame
-	#player = main_scene.get_node("Player")
-	#await get_tree().process_frame  # Wait for scene tree to finish connecting
 	
 	main_scene = get_main_scene()
 	player = get_player()
 	
-	#main_scene = get_node("/root/main_scene")
-	#player = get_node("/root/main_scene/Player")
-	#player = main_scene.get_node("Player")
 	
 	
 func get_main_scene():
@@ -54,9 +47,8 @@ func die():
 	
 func attack(player_in_range, attack_ready):
 	pass
-	#damage_self
-func calc_velo(neighbours, on_island, move_speed, position):
 	
+func calc_velo(neighbours, on_island, move_speed, position):
 	
 	dir_to = position.direction_to(player.position)
 	
@@ -79,29 +71,27 @@ func calc_velo(neighbours, on_island, move_speed, position):
 		nv = nv / 8
 		
 		
-		if (on_island):
-			move_speed = 2.4
-		else:
-			move_speed = 1.7
-		
-	else:
-		if (on_island):
-			move_speed = 2.1
-		else:
-			move_speed = 1.5
-			
+		#if on_island:
+			#move_speed = 2.4
+		#else:
+			#move_speed = 1.7
+		#
+	#else:
+		#if on_island:
+			#move_speed = 2.1
+		#else:
+			#move_speed = 1.5
+			#
 	if enemy_type == "big_duck":
 		oc = Vector2.ZERO
 		nv = Vector2.ZERO
-		move_speed = .5 
 		
-	print("boid speed", move_speed)
+		
+	print("move speed in", move_speed)
 	velocity = (dir_to*20 + oc + nv) * move_speed
 	
 
 	if abs(position.x - player.position.x) < 10 and abs(position.y - player.position.y) < 10:
 		velocity = Vector2.ZERO
 	
-	#am = Vector2.ZERO
-	#velocity = Vector2.ZERO
 	return velocity

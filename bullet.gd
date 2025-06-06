@@ -23,13 +23,9 @@ func _ready():
 	delete_timer.start(3)
 	
 func _physics_process(delta):
-	#print(x)
-	
 	
 	if x != null:
 		velocity = x * speed
-	#velocity = Vector2(0,-speed).rotated(dir)
-		
 	move_and_slide()
 	
 

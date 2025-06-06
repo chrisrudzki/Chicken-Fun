@@ -16,11 +16,8 @@ var is_stopped = false
 
 
 func hitwall():
-	#velocity = Vector2.ZERO
 	velocity = velocity / 7
 	stop_timer.start(.05)
-	print("hitanother wall")
-	
 	
 func wall():
 	pass
@@ -65,12 +62,8 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 	if body.has_method("bullet"):
 		body.velocity = Vector2.ZERO
 		
-	
-
-
 func _on_hitbox_body_exited(body: Node2D) -> void:
 	pass # Replace with function body.
-
 
 func _on_stop_timer_timeout() -> void:
 	

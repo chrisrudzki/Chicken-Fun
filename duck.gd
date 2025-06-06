@@ -2,18 +2,13 @@ extends Enemy
 
 var boid_num
 
-#var can_attack = true
-#var is_attacking = false
-
 var attack_cooldown = true
-#attack_cooldown true means you can attack
 
 var melee_dmg = 15
 var splash = preload("res://splash.tscn")
 var can_splash = true
 var done_death = false
 
-#var player_in_enemy
 
 @onready var attack_cooldown_timer = $AttackCooldownTimer
 @onready var attack_startup_timer = $AttackStartupTimer
@@ -29,7 +24,7 @@ func _ready():
 	
 	$AnimatedSprite2D.play("swim")
 	health = 100
-	move_speed = 1.7
+	move_speed = 1.8
 	
 	
 func walk():

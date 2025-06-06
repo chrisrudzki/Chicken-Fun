@@ -1,8 +1,20 @@
-[gd_scene load_steps=14 format=3 uid="uid://dxeivemmdttcp"]
+[gd_scene load_steps=19 format=3 uid="uid://dxeivemmdttcp"]
 
 [ext_resource type="Script" path="res://big_duck.gd" id="1_0xna6"]
 [ext_resource type="Texture2D" uid="uid://b1iktlqjulpv2" path="res://newduckvectorscolred33.png" id="2_phxue"]
-[ext_resource type="Texture2D" uid="uid://bhjrh2silljl4" path="res://new_ducks_colored.png" id="4_ligii"]
+[ext_resource type="Texture2D" uid="uid://ba2i2a30ref61" path="res://new_ducks_colored.png" id="4_ligii"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q76hs"]
+atlas = ExtResource("4_ligii")
+region = Rect2(1100, 1200, 1100, 600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5n27d"]
+atlas = ExtResource("4_ligii")
+region = Rect2(2200, 600, 1100, 600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6wd73"]
+atlas = ExtResource("4_ligii")
+region = Rect2(0, 1200, 1100, 600)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7n66t"]
 atlas = ExtResource("2_phxue")
@@ -26,9 +38,23 @@ region = Rect2(2200, 600, 1100, 600)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_g5enc"]
 animations = [{
-"frames": [],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q76hs")
+}],
 "loop": true,
 "name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5n27d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wd73")
+}],
+"loop": false,
+"name": &"attackStartUp",
 "speed": 5.0
 }, {
 "frames": [{
@@ -74,6 +100,12 @@ radius = 17.0294
 [sub_resource type="CircleShape2D" id="CircleShape2D_gt7nl"]
 radius = 14.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_ja3ou"]
+radius = 299.933
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_joief"]
+radius = 32.0
+
 [node name="BigDuck" type="CharacterBody2D"]
 position = Vector2(-1, 1)
 collision_layer = 2
@@ -84,7 +116,7 @@ script = ExtResource("1_0xna6")
 position = Vector2(12, 1)
 scale = Vector2(0.185749, 0.185749)
 sprite_frames = SubResource("SpriteFrames_g5enc")
-animation = &"walk"
+animation = &"attack"
 
 [node name="HitBox" type="Area2D" parent="."]
 collision_layer = 2
@@ -117,8 +149,21 @@ shape = SubResource("CircleShape2D_gt7nl")
 
 [node name="AttackCooldownTimer" type="Timer" parent="."]
 
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_ja3ou")
+
+[node name="chargeTimer" type="Timer" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_joief")
+
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="body_entered" from="HitBox" to="." method="_on_hit_box_body_entered"]
 [connection signal="body_exited" from="HitBox" to="." method="_on_hit_box_body_exited"]
 [connection signal="timeout" from="AttackStartupTimer" to="." method="_on_attack_startup_timer_timeout"]
 [connection signal="timeout" from="AttackCooldownTimer" to="." method="_on_attack_cooldown_timer_timeout"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="timeout" from="chargeTimer" to="." method="_on_charge_timer_timeout"]

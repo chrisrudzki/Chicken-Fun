@@ -2,12 +2,17 @@ extends Enemy
 
 var boid_num
 
-var attack_cooldown = true
+var attack_cooldown = false
 var melee_dmg = 90
-
+var is_charging = false
+@onready var charge_timer = $chargeTimer
+var charge_velocity
+var prev_velocity
+var prev_rotation
+var charge_rot
 
 @onready var attack_cooldown_timer = $AttackCooldownTimer
-@onready var attack_startup_timer = $AttackStartupTimer
+#@onready var attack_startup_timer = $AttackStartupTimer
 
 func walk():
 	$AnimatedSprite2D.play("walk")
@@ -19,10 +24,11 @@ func boid():
 	pass
 
 func _ready():
+	attack_cooldown_timer.start(10)
 	on_island = false
 
 	enemy_type = "big_duck"
-	move_speed = .02
+	move_speed = .5
 	main_scene = get_parent()
 	player = main_scene.get_node("Player")
 	
@@ -41,15 +47,24 @@ func attack(player_in_range, attack_ready):
 	
 	if player_in_range and attack_ready:
 		
-		print("good attack! ", melee_dmg)
-		player.damage_self(melee_dmg)
+		print("has attacked ")
+		
+		
+		$AnimatedSprite2D.play("attack")
+		is_charging = true
+		
+		charge_velocity = prev_velocity
+		charge_rot = prev_rotation
+		print("delocity !", charge_velocity)
+		move_speed = move_speed * 40
+		
+		charge_timer.start(2)
+		#player.damage_self(melee_dmg)
 		#animate player hurt
 		
 func hit_self(dmg_amount):
 	health = health - dmg_amount
 	$AnimatedSprite2D.play("hit")
-	
-	
 	
 func die():
 	$AnimatedSprite2D.play("death")
@@ -58,37 +73,36 @@ func die():
 	main_scene.money = main_scene.money + 100
 	$HitBox/CollisionShape2D.disabled = true
 	
+	
+	
 func _physics_process(delta):
+	
 	
 	if health <= 0:
 		die()
 		
 	if player_in_range and attack_cooldown:
 		attack_cooldown = false
-		print("attacking here", player_in_range)
-		attack_startup_timer.start(.4)
-		attack_cooldown_timer.start(2)
-		$AnimatedSprite2D.play("attack")
+		
+		attack_cooldown_timer.start(10)
+		$AnimatedSprite2D.play("attackStartUp")
+	print("move speed out", move_speed)
 	
 	velocity = calc_velo(neighbours, on_island, move_speed, position)
+	
+	if is_charging:
+		print("is_charging ", charge_velocity)
+		velocity = charge_velocity * move_speed
+		rotation = prev_rotation
+	
+	
+	print("delocity 2", velocity)
 	move_and_slide()
+	prev_velocity = velocity
+	prev_rotation = rotation
 	
 	velocity = Vector2.ZERO
 	
-
-#func attack():
-	#
-	##player.damage_self(melee_dmg)
-	#melee_cooldown = true
-	#melee_cooldown_timer.wait_time = 2
-	#melee_cooldown_timer.start()
-	#
-	#can_attack = false
-	#attack_cooldown_timer.start(1.5)
-	#$AnimatedSprite2D.play("attack")
-	#
-
-
 func _on_hit_box_body_entered(body: Node2D) -> void:
 	if body.has_method("rock"):
 		
@@ -99,24 +113,15 @@ func _on_hit_box_body_entered(body: Node2D) -> void:
 		hit_self(body.dmg)
 		body.delete_timer.start(.02)
 		
-		#body.queue_free()
 		
 	if body.has_method("wall"):
 		
 		hit_self(120)
-
-	if body.has_method("player"):
 		
-		player_in_range = true
-	
-	
-	
-	if body.has_method("player"):
-		
-		player_in_range = false
+	if body.has_method("player") and is_charging:
+		body.damage_self(80)
 		
 
-		
 
 func _on_hit_box_body_exited(body: Node2D) -> void:
 	
@@ -125,9 +130,6 @@ func _on_hit_box_body_exited(body: Node2D) -> void:
 		player_in_range = false
 		
 
-
-func _on_attack_startup_timer_timeout() -> void:
-	attack(player_in_range, true)
 
 func _on_attack_cooldown_timer_timeout() -> void:
 	attack_cooldown = true
@@ -138,5 +140,31 @@ func _on_animated_sprite_2d_animation_finished() -> void:
 	if $AnimatedSprite2D.animation == "death":
 		queue_free()
 		main_scene.money = main_scene.money + 5
+		
+	elif $AnimatedSprite2D.animation == "attackStartUp":
+		
+		#charge_velocity = velocity 
+		#move_speed = 13
+		print("attacking hereo")
+		attack(true, true)
+		
 	else:
 		$AnimatedSprite2D.play("walk")
+		#$AnimatedSprite2D.play("attack")
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	if body.has_method("player"):
+		
+		player_in_range = true
+	
+func _on_area_2d_body_exited(body: Node2D) -> void:
+	if body.has_method("player"):
+		
+		player_in_range = false
+		
+
+
+func _on_charge_timer_timeout() -> void:
+	is_charging = false
+	move_speed = .5
+	$AnimatedSprite2D.play("walk")

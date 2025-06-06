@@ -3,7 +3,6 @@ extends CharacterBody2D
 @export var move_speed : int = 1550
 
 var starting_direction = Vector2(0,1)
-#var input_direction = starting_direction
 
 var input_direction = Vector2(0,0)
 signal updateHealth
@@ -11,7 +10,6 @@ signal updateLevel
 
 @onready var roll_timer = $rollTimer
 @onready var roll_cooldown_timer = $rollCooldownTimer
-
 
 @onready var splash_cooldown_timer = $SplashTimer
 
@@ -64,11 +62,6 @@ var shoot_small_gun_amount = 2
 
 #var shoot_count = 0
 
-var player_in_roll = false
-var roll_cooldown = true
-var roll_len = .1865
-var roll_cooldown_amount = 2.8
-
 var bullet_dmg = 35
 
 
@@ -90,21 +83,21 @@ var is_walking
 var on_island = true
 var can_splash = true
 
-
-#parameters/idle/blend_position
 func player():
 	pass
-	
 	
 func in_area(new_area):
 	
 	area = new_area
 	
 	
-func damage_self(x):
+func damage_self(damage):
 	
 	regen_health_timer.start(1)
-	health = health - x
+	health = health - damage
+	$Sprite2D.modulate = Color(1, 0, 0) # Tint red
+	await get_tree().create_timer(0.4).timeout
+	$Sprite2D.modulate = Color(1, 1, 1) # Back to normal (white)
 	updateHealth.emit()
 	
 	
@@ -172,8 +165,8 @@ func shoot_small_gun():
 	main_scene.add_child.call_deferred(instance)
 	
 func shoot_big_gun():
-	var scalar = 20
 	
+	var scalar = 20
 	
 	var mouse_pos_global = get_global_mouse_position()
 	var loc_mouse_pos = main_scene.to_local(mouse_pos_global)
@@ -235,8 +228,6 @@ func _physics_process(_delta):
 	var big_gun_change_wep = Input.get_action_strength("big_gun_change_wep")
 	var wall_gun_change_wep = Input.get_action_strength("wall_gun_change_wep")
 	
-	#int(shoot_input)
-	
 	
 	if small_gun_change_wep == 1:
 		cur_gun = 1
@@ -247,12 +238,6 @@ func _physics_process(_delta):
 	elif wall_gun_change_wep == 1:
 		cur_gun = 3
 	
-	#if shoot_count > 2:
-		#shoot_count = 0
-	
-	#shoot_count = shoot_count + 1
-	#print(cur_gun)
-	#!!!!
 	if shoot_input == 1 and can_shoot_small_gun and cur_gun == 1:
 		
 		shoot_cooldown_SG_timer.start(.70)
@@ -328,12 +313,10 @@ func _physics_process(_delta):
 
 	velocity = input_direction * move_speed * _delta
 	
-#rotate
 	print("in dir", input_direction)
 	move_and_slide()
 	
 	det_cur_state()
-	#print("herp 1", $AnimationTree.get("parameters/blend_amount"))
 	
 	
 
@@ -351,23 +334,14 @@ func update_animation_parameters(move_input : Vector2):
 		animation_tree["parameters/conditions/is_idle"] = true
 		animation_tree["parameters/conditions/is_walking"] = false
 	
-		#print("herp 2", state_machine.blend_position)
-		
 		
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body.has_method("boid") and body.has_method("duck"):
-		#if body.can_attack == true:
-			#damage_self(10)
-			#body.attack()
-			#enemys_in_range.append(body)
-			#body.in_player_range = true
-		#body.in_player_range = true
 		enemys_in_range.append(body)
 	
 func _on_area_2d_body_exited(body: Node2D) -> void:
 	if body.has_method("boid"):
 		enemys_in_range.erase(body)
-		#body.in_player_range = false
 		
 func _on_regen_heath_timer_timeout() -> void:
 	is_regen_health = true
@@ -377,13 +351,6 @@ func _on_regen_heath_timer_timeout() -> void:
 func _on_regen_heath_timer_2_timeout() -> void:
 	is_regen_health = false
 
-
-#func _on_roll_timer_timeout() -> void:
-	#move_speed = 10000
-	#player_in_roll = false
-#
-#func _on_roll_cooldown_timer_timeout() -> void:
-	#roll_cooldown = true
 
 func _on_shoot_SG_timer_timeout() -> void:
 	can_shoot_small_gun = true

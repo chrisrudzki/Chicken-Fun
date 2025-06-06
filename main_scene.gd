@@ -5,7 +5,7 @@ var game_over_screen = preload("res://game_over_screen.tscn")
 var rock = preload("res://rock.tscn")
 var new_duck = preload("res://Duck.tscn")
 var big_duck = preload("res://BigDuck.tscn")
-
+var mallard = preload("res://mallard.tscn")
 
 @onready var player = $Player
 var boid_num = 0
@@ -25,6 +25,9 @@ var amount_spawning = 0
 var freq_spawning = .5
 
 var can_quack_noise = true
+var special_round = false
+
+var can_spawn_big_duck = false
 
 
 var all_spawn_pos = [Vector2(-250, -170), Vector2(-350, 1820), Vector2(-250, 490), Vector2(370, 700), Vector2(950, 450), Vector2(1200, 182), Vector2(1200, 182), Vector2(100, -112), Vector2(390, -200)]
@@ -34,6 +37,7 @@ var spawn_pos = [Vector2(-250, -170), Vector2(950, 450)]
 @onready var round_timer = $RoundTimer
 @onready var spawn_timer = $SpawnTimer
 @onready var spawn_pos_timer = $SpawnPosTimer
+@onready var big_duck_timer = $bigDuckTimer
 
 #@onready var money_label = $CanvasLayer/Control/HBoxContainer/MarginContainer3/Money_Label
 @onready var money_label = $CanvasLayer/Control2/HBoxContainer/MarginContainer/Label
@@ -41,8 +45,8 @@ var spawn_pos = [Vector2(-250, -170), Vector2(950, 450)]
 
 func _ready():
 	
-	
-	round_timer.start(5)
+	$mainAudio.play()
+	round_timer.start(.1)
 	
 	astar_grid = AStarGrid2D.new()
 	
@@ -51,8 +55,16 @@ func _ready():
 	astar_grid.update()
 	spawn_pos_timer.start(30)
 	
+	big_duck_timer.start(10)
 	
-	var ins = big_duck.instantiate()
+func get_path_arr(boid_postion, player_position):
+	
+	return astar_grid.get_id_path(boid_postion, player_position)
+	
+func create_duck(ins):
+	spawn_timer.start(freq_spawning)
+	spawn_is_ready = false
+		
 	boid_num = boid_num + 1
 	ins.boid_num = boid_num
 		
@@ -63,12 +75,9 @@ func _ready():
 			
 	ins.position = boid_position
 			
+	print(ins, "ins ")
 	add_child(ins)
 	
-	
-func get_path_arr(boid_postion, player_position):
-	
-	return astar_grid.get_id_path(boid_postion, player_position)
 	
 	
 func _physics_process(delta: float) -> void:
@@ -81,7 +90,6 @@ func _physics_process(delta: float) -> void:
 		can_quack_noise = false
 		$duckNoiseTimer.start(10)
 		
-	
 	
 	money_label.text = str(money)
 	
@@ -96,24 +104,22 @@ func _physics_process(delta: float) -> void:
 	#if round_is_done == false:
 	
 	if spawn_is_ready and boid_num < 350:
-		spawn_timer.start(freq_spawning)
-		spawn_is_ready = false
-		for i in range(amount_spawning):
-			var ins = new_duck.instantiate()
-			boid_num = boid_num + 1
-			ins.boid_num = boid_num
+		print("sr ", special_round)
 		
-			var boid_position = spawn_pos[randi() % spawn_pos.size()]
+		if !special_round:
+			var ins = new_duck.instantiate()
+			create_duck(ins)
+		else:
+			if can_spawn_big_duck:
+				var ins = big_duck.instantiate()
+				create_duck(ins)
+				big_duck_timer.start(10)
+				can_spawn_big_duck = false
+				
 			
-			boid_position.x = boid_position.x + randi_range(-100, 100)
-			boid_position.y = boid_position.y + randi_range(-100, 100)
+			var ins = mallard.instantiate()
+			create_duck(ins)
 			
-			ins.position = boid_position
-			
-			add_child(ins)
-	
-	
-	#elif boid_num == 0:
 		
 	if round_is_done:
 		
@@ -125,53 +131,40 @@ func _physics_process(delta: float) -> void:
 		
 func duck_death_sound():
 	$duckDeath.play()
-		
 	
 func change_round():
 	
 	round = round + 1
 	
+	special_round = false
+	
 	if round == 1:
-		print("START OF ROUND 1")
 		round_time = 30
-		amount_spawning = 1
 		freq_spawning = 1.2
 	
 	elif round == 2:
-		print("START OF ROUND 2")
 		round_time = 30
-		amount_spawning = 1
 		freq_spawning = .9
 		
 	elif round == 3:
 		round_time = 40
-		amount_spawning = 1
 		freq_spawning = .3
-		print("START OF ROUND 3")
 		
 	elif round == 4:
 		round_time = 40
-		amount_spawning = 1
 		freq_spawning = 0.2
-		print("START OF ROUND 4")
 		
-	elif round == 5:
+	elif round % 5 == 0:
+		print("special ROUND")
 		round_time = 40
-		amount_spawning = 1
-		freq_spawning = .1
-		print("START OF ROUND 5")
+		freq_spawning = .4
+		special_round = true
 	
 	else:
 		round_time = round_time + 5
 		if freq_spawning > .025:
 			freq_spawning = freq_spawning - .025
 		
-		
-		print("NEXT ROUND")
-		
-	
-	
-	
 func _on_round_timer_timeout() -> void:
 	round_is_done = true
 	
@@ -199,7 +192,7 @@ func _on_island_area_body_entered(body: Node2D) -> void:
 	elif body.has_method("player"):
 		body.on_island = true
 		body.move_speed = body.move_speed + 11000
-		
+		#move_speed
 
 func _on_island_area_body_exited(body: Node2D) -> void:
 	if body.has_method("boid"):
@@ -228,3 +221,7 @@ func _on_spawn_pos_timer_timeout() -> void:
 
 func _on_duck_noise_timer_timeout() -> void:
 	can_quack_noise = true
+
+
+func _on_big_duck_timer_timeout() -> void:
+	can_spawn_big_duck = true
