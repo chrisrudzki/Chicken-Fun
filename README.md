@@ -11,4 +11,4 @@ Features:
 Currency and upgrade system
 intellegent Boid AI enemy movement
 
-All content asside from main audio track done by Chris Rudzki
+All content asside from main audio track by Chris Rudzki
