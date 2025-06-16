@@ -1,4 +1,4 @@
-### Chicken Fun
+## Chicken Fun
 
 Single player top down action shooter where the player fights hordes of vicious chickens invading his island.
 
