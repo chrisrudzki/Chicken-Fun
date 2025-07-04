@@ -1,8 +1,7 @@
-[gd_scene load_steps=49 format=3 uid="uid://dts3k644pba50"]
+[gd_scene load_steps=42 format=3 uid="uid://dts3k644pba50"]
 
 [ext_resource type="Script" path="res://character.gd" id="1_ho100"]
 [ext_resource type="Texture2D" uid="uid://byfwgax1x50ab" path="res://vector player spritesheet re-do color .png" id="2_2mnst"]
-[ext_resource type="Texture2D" uid="uid://b3xvs5e1usg3m" path="res://final_player_spritesheet2.png" id="2_5t8s1"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_g1spx"]
 animation = &"attack_down"
@@ -499,49 +498,6 @@ size = Vector2(8, 8)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m0jna"]
 size = Vector2(20, 18)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_iaoiq"]
-atlas = ExtResource("2_5t8s1")
-region = Rect2(2200, 1440, 1100, 720)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ql7pc"]
-atlas = ExtResource("2_5t8s1")
-region = Rect2(2200, 2880, 1100, 720)
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_4j3sa"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_jwabq"]
-atlas = SubResource("CompressedTexture2D_4j3sa")
-region = Rect2(2200, 720, 1100, 720)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_0fnnm"]
-atlas = SubResource("CompressedTexture2D_4j3sa")
-region = Rect2(3300, 720, 1100, 720)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_ddjkf"]
-animations = [{
-"frames": [{
-"duration": 5.0,
-"texture": SubResource("AtlasTexture_iaoiq")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ql7pc")
-}],
-"loop": true,
-"name": &"idle",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_jwabq")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_0fnnm")
-}],
-"loop": true,
-"name": &"walk",
-"speed": 5.0
-}]
-
 [node name="Player" type="CharacterBody2D"]
 motion_mode = 1
 safe_margin = 1.468
@@ -597,12 +553,7 @@ shape = SubResource("RectangleShape2D_m0jna")
 
 [node name="regenHeathTimer2" type="Timer" parent="."]
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-visible = false
-position = Vector2(1.90735e-06, 9.53674e-07)
-scale = Vector2(0.0626745, 0.0615192)
-sprite_frames = SubResource("SpriteFrames_ddjkf")
-animation = &"idle"
+[node name="SplashTimer" type="Timer" parent="."]
 
 [connection signal="body_entered" from="Hitbox" to="." method="_on_area_2d_body_entered"]
 [connection signal="body_exited" from="Hitbox" to="." method="_on_area_2d_body_exited"]
@@ -614,3 +565,4 @@ animation = &"idle"
 [connection signal="timeout" from="shootCooldownWG" to="." method="_on_shoot_cooldown_wg_timeout"]
 [connection signal="timeout" from="regenHeathTimer" to="." method="_on_regen_heath_timer_timeout"]
 [connection signal="timeout" from="regenHeathTimer2" to="." method="_on_regen_heath_timer_2_timeout"]
+[connection signal="timeout" from="SplashTimer" to="." method="_on_splash_timer_timeout"]

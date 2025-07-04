@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://bktkef05g05wr"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_d6nbl"]
+
+[sub_resource type="Animation" id="Animation_li0ec"]
+resource_name = "walk"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_52s83"]
+_data = {
+"walk": SubResource("Animation_li0ec")
+}
+
+[node name="Store" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("ViewportTexture_d6nbl")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_52s83")
+}

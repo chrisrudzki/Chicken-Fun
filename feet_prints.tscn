@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://ctg1qmj5l8hel"]
+
+[ext_resource type="Script" path="res://feet_prints.gd" id="1_corab"]
+[ext_resource type="Texture2D" uid="uid://dl0hj2ocv5lrg" path="res://art/footprints.png" id="1_y4c6m"]
+
+[node name="Node2D" type="CharacterBody2D"]
+script = ExtResource("1_corab")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = -1
+position = Vector2(-6, 3)
+scale = Vector2(0.018, 0.018)
+texture = ExtResource("1_y4c6m")
+
+[node name="Timer" type="Timer" parent="."]
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

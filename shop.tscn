@@ -1,5 +1,68 @@
-[gd_scene format=3 uid="uid://d10wkteb7v02h"]
+[gd_scene load_steps=7 format=3 uid="uid://d10wkteb7v02h"]
 
-[node name="Shop" type="Node2D"]
+[ext_resource type="Texture2D" uid="uid://c51tuee0qnnup" path="res://art/store guy colored2.png" id="1_bf808"]
+[ext_resource type="Script" path="res://shop.gd" id="1_q4nin"]
+
+[sub_resource type="Animation" id="Animation_nvvxe"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_515iu"]
+resource_name = "idle"
+length = 2.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0333333, 2.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [1, 0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_up5i4"]
+_data = {
+"RESET": SubResource("Animation_nvvxe"),
+"idle": SubResource("Animation_515iu")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fuuv5"]
+size = Vector2(23.5, 21)
+
+[node name="Shop" type="CharacterBody2D"]
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("1_q4nin")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -13)
+scale = Vector2(0.040409, 0.040409)
+texture = ExtResource("1_bf808")
+hframes = 2
+frame = 1
+region_enabled = true
+region_rect = Rect2(0, 307.781, 1701.11, 1738.22)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_up5i4")
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.25, 0.5)
+shape = SubResource("RectangleShape2D_fuuv5")

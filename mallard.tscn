@@ -1,0 +1,121 @@
+[gd_scene load_steps=14 format=3 uid="uid://cqqm2im132476"]
+
+[ext_resource type="Texture2D" uid="uid://0bgit0e8nlmf" path="res://mallard colored.png" id="1_bte6h"]
+[ext_resource type="Script" path="res://mallard.gd" id="2_6xrih"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1qibw"]
+atlas = ExtResource("1_bte6h")
+region = Rect2(303, 0, 303, 308)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dclur"]
+atlas = ExtResource("1_bte6h")
+region = Rect2(1212, 308, 303, 308)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c6ddj"]
+atlas = ExtResource("1_bte6h")
+region = Rect2(1515, 308, 303, 308)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xknfy"]
+atlas = ExtResource("1_bte6h")
+region = Rect2(606, 308, 303, 308)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8do73"]
+atlas = ExtResource("1_bte6h")
+region = Rect2(909, 308, 303, 308)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0ws0g"]
+atlas = ExtResource("1_bte6h")
+region = Rect2(606, 0, 303, 308)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wqyhp"]
+atlas = ExtResource("1_bte6h")
+region = Rect2(909, 0, 303, 308)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_sw20o"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1qibw")
+}],
+"loop": true,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.5,
+"texture": SubResource("AtlasTexture_dclur")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_c6ddj")
+}],
+"loop": false,
+"name": &"death",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xknfy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8do73")
+}],
+"loop": true,
+"name": &"swim",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0ws0g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wqyhp")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ek6qx"]
+radius = 11.0454
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vbqsb"]
+radius = 249.032
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ci0lf"]
+radius = 13.0
+
+[node name="Mallard" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("2_6xrih")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(2, 0)
+scale = Vector2(0.0742574, 0.0742574)
+sprite_frames = SubResource("SpriteFrames_sw20o")
+animation = &"death"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_ek6qx")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(2, 0)
+shape = SubResource("CircleShape2D_vbqsb")
+
+[node name="attackCooldownTimer" type="Timer" parent="."]
+
+[node name="chargeTimer" type="Timer" parent="."]
+
+[node name="Area2D2" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D2"]
+shape = SubResource("CircleShape2D_ci0lf")
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="timeout" from="attackCooldownTimer" to="." method="_on_attack_cooldown_timer_timeout"]
+[connection signal="timeout" from="chargeTimer" to="." method="_on_charge_timer_timeout"]
+[connection signal="body_entered" from="Area2D2" to="." method="_on_area_2d_2_body_entered"]
