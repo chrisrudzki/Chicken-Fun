@@ -3,9 +3,13 @@ extends Enemy
 var boid_num
 
 var attack_cooldown = false
+
 var melee_dmg = 90
+
 var is_charging = false
+
 @onready var charge_timer = $chargeTimer
+
 var charge_velocity
 var prev_velocity
 var prev_rotation
@@ -21,7 +25,6 @@ func swim():
 	$AnimatedSprite2D.play("swim")
 	
 func boid():
-	#used for identification
 	pass
 
 func _ready():
