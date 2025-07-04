@@ -45,8 +45,6 @@ func get_player():
 	return player
 	
 func attack(player_in_range, attack_ready):
-	#takes time for wind up
-	#takes time for attack cooldown
 	
 	if player_in_range and attack_ready:
 		
@@ -64,14 +62,14 @@ func attack(player_in_range, attack_ready):
 		
 		
 func hit_self(dmg_amount):
-	#self is damaged
+	# entity is damaged
 	
 	health = health - dmg_amount
 	if $AnimatedSprite2D.animation != "death":
 		$AnimatedSprite2D.play("hit")
 	
 func die():
-	#self dies
+	# entity dies
 	
 	$AnimatedSprite2D.play("death")
 	main_scene.boid_num = main_scene.boid_num -1
@@ -85,7 +83,7 @@ func _physics_process(delta):
 		die()
 		
 	if player_in_range and attack_cooldown:
-		#self attacking player
+		# entity attacking player
 		
 		attack_cooldown = false
 		
@@ -110,7 +108,7 @@ func _physics_process(delta):
 	velocity = Vector2.ZERO
 	
 func _on_hit_box_body_entered(body: Node2D) -> void:
-	#if other entity enters self
+	# if other entity enters self
 	
 	if body.has_method("rock"):
 		
@@ -127,7 +125,7 @@ func _on_hit_box_body_entered(body: Node2D) -> void:
 		hit_self(120)
 		
 	if body.has_method("player") and is_charging:
-		#if self if charging, damage the player
+		# when entity is charging damage the player
 		body.damage_self(80)
 		
 
@@ -164,7 +162,7 @@ func _on_area_2d_body_exited(body: Node2D) -> void:
 		
 
 func _on_charge_timer_timeout() -> void:
-	#after self charge attack
+	#after entity charge attack
 	
 	is_charging = false
 	move_speed = .5
